@@ -55,25 +55,21 @@ public:
     return sign * prefactor * total_norm * total_coefficient * total_overlap;
   }
 
-  constexpr float kinect(const GaussianTypeOrbital& other) const noexcept {
-    float coefficient = other.m_coefficient;
-    Vec3 center = other.m_center;
-    auto [i,j,k] = other.m_exponent;
-    float alpha = other.m_alpha;
+  constexpr Vec3 dipole_moment(const GaussianTypeOrbital& other) {
+    Vec3 independent_term = (m_center + other.m_center) * 0.5f * overlap(other);
+    float reduced_alpha = (other.m_alpha - m_alpha) / (other.m_alpha * m_alpha);
+    Vec3 dependent_term{
+      0.5f * ((m_exponent.i - other.m_exponent.i) * overlap(other.with_incremented_exponents(-1, 0, 0)) + 0.5f * reduced_alpha * overlap(other.with_incremented_exponents(1, 0, 0))),
+      0.5f * ((m_exponent.j - other.m_exponent.j) * overlap(other.with_incremented_exponents(0, -1, 0)) + 0.5f * reduced_alpha * overlap(other.with_incremented_exponents(0, 1, 0))),
+      0.5f * ((m_exponent.i - other.m_exponent.i) * overlap(other.with_incremented_exponents(0, 0, -1)) + 0.5f * reduced_alpha * overlap(other.with_incremented_exponents(0, 0, 1)))
+    };
+    return independent_term + dependent_term;
+  }
 
-    float term1 = alpha * (2.0f * (i + j + k) + 3.0f) *
-      overlap(GaussianTypeOrbital(coefficient, center, Exponent{i,j,k}, alpha));
-
-    float term2 = -2.0f * std::pow(alpha, 2.0f) *
-      (overlap(GaussianTypeOrbital(coefficient, center, Exponent{i+2,j,k}, alpha)) +
-       overlap(GaussianTypeOrbital(coefficient, center, Exponent{i,j+2,k}, alpha)) +
-       overlap(GaussianTypeOrbital(coefficient, center, Exponent{i,j,k+2}, alpha)));
-
-    float term3 = -0.5f * (i * (i - 1) * overlap(GaussianTypeOrbital(coefficient, center, Exponent{i-2,j,k}, alpha)) +
-                           j * (j - 1) * overlap(GaussianTypeOrbital(coefficient, center, Exponent{i,j-2,k}, alpha)) +
-                           k * (k - 1) * overlap(GaussianTypeOrbital(coefficient, center, Exponent{i,j,k-2}, alpha)));
-
-    return term1 + term2 + term3;
+  constexpr float kinetic(const GaussianTypeOrbital& other) const noexcept {
+    return -0.5f * (overlap(other.with_incremented_exponents(2,0,0)) +
+                    overlap(other.with_incremented_exponents(0,2,0)) +
+                    overlap(other.with_incremented_exponents(0,0,2)));
   }
 
   constexpr float norm() const noexcept {
@@ -83,6 +79,14 @@ public:
   friend std::ostream& operator<<(std::ostream& os, const GaussianTypeOrbital& g);
 
 private:
+  constexpr GaussianTypeOrbital with_incremented_exponents(int i, int j, int k) const {
+    GaussianTypeOrbital g = *this;
+    g.m_exponent.i += i;
+    g.m_exponent.j += j;
+    g.m_exponent.i += k;
+    return g;
+  }
+
   static constexpr float compute_norm(float alpha, int i, int j, int k) noexcept {
     float prefactor = std::pow(2.0f * alpha / M_PI, 0.75f);
     float numerator = std::pow(4.0f * alpha, 0.5f * (i + j + k));
@@ -133,7 +137,7 @@ public:
     float result = 0;
     for (const auto& gto1 : m_gtos) {
       for (const auto& gto2 : other.m_gtos) {
-        result += gto1.kinect(gto2);
+        result += gto1.kinetic(gto2);
       }
     }
     return result;
