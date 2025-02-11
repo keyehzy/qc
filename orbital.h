@@ -10,8 +10,8 @@
 
 class Gaussian {
 public:
-  constexpr Gaussian(float center, int exponent, float alpha) :
-    m_center(center), m_exponent(exponent), m_alpha(alpha) {}
+  constexpr Gaussian(float center, int exponent, float alpha, float slater_xi = 1.0f) :
+    m_center(center), m_exponent(exponent), m_alpha(alpha * slater_xi * slater_xi) {}
 
   constexpr float eval(float x) const noexcept {
     float r = x - m_center;
@@ -19,7 +19,7 @@ public:
   }
 
   constexpr float overlap(const Gaussian& other) const noexcept {
-    return HermiteAuxiliary::E(m_exponent, other.m_exponent, 0, std::abs(m_center - other.m_center), m_alpha, other.m_alpha);
+    return HermiteAuxiliary::E(m_exponent, other.m_exponent, 0, other.m_center - m_center, m_alpha, other.m_alpha);
   }
 
   friend std::ostream& operator<<(std::ostream& os, const Gaussian& g);
@@ -47,11 +47,12 @@ public:
   }
 
   constexpr float overlap(const GaussianTypeOrbital& other) const noexcept {
+    float sign = 2.0f * ((other.m_exponent.i + other.m_exponent.j + other.m_exponent.k) % 2) - 1.0f;
     float prefactor = std::pow(M_PI / (m_alpha + other.m_alpha), 1.5f);
     float total_norm = m_norm * other.m_norm;
     float total_coefficient = m_coefficient * other.m_coefficient;
     float total_overlap = m_A.overlap(other.m_A) * m_B.overlap(other.m_B) * m_C.overlap(other.m_C);
-    return prefactor * total_norm * total_coefficient * total_overlap;
+    return sign * prefactor * total_norm * total_coefficient * total_overlap;
   }
 
   constexpr float kinect(const GaussianTypeOrbital& other) const noexcept {

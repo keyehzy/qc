@@ -44,4 +44,30 @@ struct HermiteAuxiliary {
     }
     return H[index(exponent1, exponent2, nodes, exponent1, exponent2)];
   }
+
+  // Recursive version for reference
+  static constexpr float hermite_E(int exponent1, int exponent2, int nodes, float Q,
+                                   float alpha1, float alpha2) noexcept {
+    float p        = alpha1 + alpha2;
+    float q        = (alpha1 * alpha2) / p;
+    float inv2p    = 1.0f / (2.0f * p);
+    float qQalpha1 = q * Q / alpha1;
+    float qQalpha2 = q * Q / alpha2;
+
+    if (nodes < 0 || nodes > exponent1 + exponent2) {
+      return 0.0f;
+    } else if (exponent1 == 0 && exponent2 == 0 && nodes == 0) {
+      return std::exp(-q * Q * Q);
+    } else if (exponent2 == 0) {
+      float left = hermite_E(exponent1 - 1, exponent2, nodes - 1, Q, alpha1, alpha2);
+      float mid = hermite_E(exponent1 - 1, exponent2, nodes, Q, alpha1, alpha2);
+      float right = hermite_E(exponent1 - 1, exponent2, nodes + 1, Q, alpha1, alpha2);
+      return inv2p * left - qQalpha1 * mid  + (nodes + 1) * right;
+    } else {
+      float left = hermite_E(exponent1, exponent2 - 1, nodes - 1, Q, alpha1, alpha2);
+      float mid = hermite_E(exponent1, exponent2 - 1, nodes, Q, alpha1, alpha2);
+      float right = hermite_E(exponent1, exponent2 - 1, nodes + 1, Q, alpha1, alpha2);
+      return inv2p * left - qQalpha2 * mid + (nodes + 1) * right;
+    }
+  }
 };
