@@ -19,7 +19,7 @@ public:
   }
 
   constexpr float overlap(const Gaussian& other) const noexcept {
-    return HermiteAuxiliary::hermite_E(m_exponent, other.m_exponent, 0, m_center - other.m_center, m_alpha, other.m_alpha);
+    return HermiteAuxiliary::E(m_exponent, other.m_exponent, 0, m_center - other.m_center, m_alpha, other.m_alpha);
   }
 
   friend std::ostream& operator<<(std::ostream& os, const Gaussian& g);

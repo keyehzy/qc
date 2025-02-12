@@ -9,6 +9,10 @@ struct HermiteAuxiliary {
   }
 
   static constexpr float E(int exponent1, int exponent2, int nodes, float Q, float alpha1, float alpha2) noexcept {
+    if (exponent1 < 0 || exponent2 < 0) {
+      return 0.0f;
+    }
+    
     if (nodes < 0 || nodes > exponent1 + exponent2) {
       return 0.0f;
     }
