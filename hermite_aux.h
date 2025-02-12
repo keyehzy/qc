@@ -38,7 +38,7 @@ struct HermiteAuxiliary {
           float left  = (n - 1 >= 0) ? H[index(i, j - 1, n - 1, exponent1, exponent2)] : 0.0f;
           float mid   = H[index(i, j - 1, n, exponent1, exponent2)];
           float right = (n + 1 <= (i + j - 1)) ? H[index(i, j - 1, n + 1, exponent1, exponent2)] : 0.0f;
-          H[index(i, j, n, exponent1, exponent2)] = inv2p * left - qQalpha2 * mid + (n + 1) * right;
+          H[index(i, j, n, exponent1, exponent2)] = inv2p * left + qQalpha2 * mid + (n + 1) * right;
         }
       }
     }
@@ -67,7 +67,7 @@ struct HermiteAuxiliary {
       float left = hermite_E(exponent1, exponent2 - 1, nodes - 1, Q, alpha1, alpha2);
       float mid = hermite_E(exponent1, exponent2 - 1, nodes, Q, alpha1, alpha2);
       float right = hermite_E(exponent1, exponent2 - 1, nodes + 1, Q, alpha1, alpha2);
-      return inv2p * left - qQalpha2 * mid + (nodes + 1) * right;
+      return inv2p * left + qQalpha2 * mid + (nodes + 1) * right;
     }
   }
 };
