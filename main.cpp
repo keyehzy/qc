@@ -28,8 +28,7 @@ std::vector<GaussianTypeOrbital::Exponent> find_exponents(int N) {
 std::vector<ContractedGaussianTypeOrbital> cgto_from_basis_set(const std::vector<Atom>& molecule, const BasisSet& basis_set) {
   std::vector<ContractedGaussianTypeOrbital> result;
   for(const auto& atom : molecule) {
-    std::vector<ElectronShell> atomic_shells = basis_set.at(atom.name);
-    for (const auto& shell : atomic_shells) {
+    for (const auto& shell : basis_set.at(atom.name)) {
       for (int a : shell.angular_momentum) {
         for (const auto& exponent : find_exponents(a)) {
           std::vector<ContractedGaussianTypeOrbital::Param> params;
@@ -46,9 +45,9 @@ std::vector<ContractedGaussianTypeOrbital> cgto_from_basis_set(const std::vector
 
 int main() {
   std::vector<Atom> H2O {
-    Atom{"H", Vec3{0, 1.43233673, -0.96104039}},
-    Atom{"H", Vec3{0, -1.43233673, -0.96104039}},
-    Atom{"O", Vec3{0, 0, 0.24026010}},
+    Atom{"H", 1, Vec3{0, 1.43233673, -0.96104039}},
+    Atom{"H", 1, Vec3{0, -1.43233673, -0.96104039}},
+    Atom{"O", 8, Vec3{0, 0, 0.24026010}},
   };
 
   auto orbitals = cgto_from_basis_set(H2O, STO_3G);
@@ -57,10 +56,14 @@ int main() {
     std::cout << orbital << std::endl;
   }
 
+  std::cout << std::fixed;
   for (size_t i = 0; i < orbitals.size(); i++) {
     for (size_t j = 0; j < orbitals.size(); j++) {
-      std::cout << std::fixed;
-      std::cout << orbitals[i].kinetic(orbitals[j]) << " ";
+      float result = 0;
+      for (const Atom& atom : H2O) {
+        result += -atom.number * orbitals[i].nuclear(orbitals[j], atom.center);
+      }
+      std::cout << result << " ";
     }
     std::cout << "\n";
   }

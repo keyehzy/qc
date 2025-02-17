@@ -2,6 +2,10 @@
 
 #include <vector>
 #include <cmath>
+#include <iostream>
+#include <boost/math/special_functions/hypergeometric_1F1.hpp>
+
+#include "vec3.h"
 
 struct HermiteAuxiliary {
   static constexpr int index(int i, int j, int n, int exponent1, int exponent2) noexcept {
@@ -12,7 +16,7 @@ struct HermiteAuxiliary {
     if (exponent1 < 0 || exponent2 < 0) {
       return 0.0f;
     }
-    
+
     if (nodes < 0 || nodes > exponent1 + exponent2) {
       return 0.0f;
     }
@@ -73,5 +77,57 @@ struct HermiteAuxiliary {
       float right = hermite_E(exponent1, exponent2 - 1, nodes + 1, Q, alpha1, alpha2);
       return inv2p * left + qQalpha2 * mid + (nodes + 1) * right;
     }
+  }
+
+  // https://arxiv.org/abs/1407.7786
+  static constexpr double hyp1f1(double a, double b, double x) noexcept {
+    #if 0
+    constexpr double precision = 1e-12;
+    constexpr int max_iterations = 150;
+
+    double result = 1.0;
+    double k = 1.0;
+    double term = (a / b) * x;
+
+    while (k < max_iterations && std::abs(term) / std::abs(result) > precision) {
+      result += term;
+      term *= (a + k) / (b + k) * x / (k + 1);
+      ++k;
+    }
+    #else
+    double result = boost::math::hypergeometric_1F1(a, b, x);
+    #endif
+    return result;
+  }
+
+  static constexpr float boys(int n, float T) {
+    return hyp1f1(n + 0.5f, n + 1.5f, -T) / (2.0f * n + 1.0f);
+  }
+
+  // Recursive version for reference
+  static float hermite_R(int i, int j, int k, int order, float p, const Vec3 &P) noexcept {
+    float T = p * P.norm() * P.norm();
+    float result = 0.0f;
+
+    if (i == 0 && j == 0 && k == 0) {
+      result += std::pow(-2.0f * p, order) * boys(order, T);
+    } else if (i == 0 && j == 0) {
+      if (k > 1) {
+        result += (k - 1) * hermite_R(i, j, k - 2, order + 1, p, P);
+      }
+      result += P.z * hermite_R(i, j, k - 1, order + 1, p, P);
+    } else if (i == 0) {
+      if (j > 1) {
+        result += (j - 1) * hermite_R(i, j - 2, k, order + 1, p, P);
+      }
+      result += P.y * hermite_R(i, j - 1, k, order + 1, p, P);
+    } else {
+      if (i > 1) {
+        result += (i - 1) * hermite_R(i - 2, j, k, order + 1, p, P);
+      }
+      result += P.x * hermite_R(i - 1, j, k, order + 1, p, P);
+    }
+
+    return result;
   }
 };

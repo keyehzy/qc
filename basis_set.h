@@ -12,6 +12,7 @@ struct ElectronShell {
 
 struct Atom {
   std::string name;
+  int number;
   Vec3 center;
 };
 
