@@ -82,23 +82,7 @@ struct HermiteAuxiliary {
   static double hyp1f1(double a, double b, double x) noexcept {
     // Naive version is very bad for large values
     // Use this in the future https://arxiv.org/abs/1407.7786
-#if 0
-    constexpr double precision = 1e-12;
-    constexpr int max_iterations = 150;
-
-    double result = 1.0;
-    double k = 1.0;
-    double term = (a / b) * x;
-
-    while (k < max_iterations && std::abs(term) / std::abs(result) > precision) {
-      result += term;
-      term *= (a + k) / (b + k) * x / (k + 1);
-      ++k;
-    }
-#else
-    double result = gsl_sf_hyperg_1F1(a, b, x);
-#endif
-    return result;
+    return  gsl_sf_hyperg_1F1(a, b, x);
   }
 
   static float boys(int n, float T) {

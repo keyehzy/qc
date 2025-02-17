@@ -52,19 +52,29 @@ int main() {
 
   auto orbitals = cgto_from_basis_set(H2O, STO_3G);
 
-  std::vector<float> xs;
+  //  std::vector<float> xs;
+ //  std::cout << std::fixed;
+ //  for (const auto& orbital1 : orbitals) {
+ //    for (const auto& orbital2 : orbitals) {
+ //      for (const auto& orbital3 : orbitals) {
+ //        for (const auto& orbital4 : orbitals) {
+ //          xs.push_back(ContractedGaussianTypeOrbital::electron_repulsion(orbital1, orbital2, orbital3, orbital4));
+ //        }
+ //      }
+ //    }
+ //  }
+ // std::cout << xs[20] << "\n";
 
-  std::cout << std::fixed;
-  for (const auto& orbital1 : orbitals) {
-    for (const auto& orbital2 : orbitals) {
-      for (const auto& orbital3 : orbitals) {
-        for (const auto& orbital4 : orbitals) {
-          xs.push_back(ContractedGaussianTypeOrbital::electron_repulsion(orbital1, orbital2, orbital3, orbital4));
-        }
+ for (size_t i = 0; i < orbitals.size(); i++) {
+    for (size_t j = 0; j < orbitals.size(); j++) {
+      float result = 0;
+      for (const Atom& atom : H2O) {
+        result += -atom.number * orbitals[i].nuclear_attraction(orbitals[j], atom.center);
       }
+      std::cout << result << " ";
     }
+    std::cout << "\n";
   }
 
-  std::cout << xs[20] << "\n";
 }
 

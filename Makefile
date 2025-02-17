@@ -1,6 +1,6 @@
 CXX = g++
 CXXFLAGS = -Wall -Wextra -g -O2 -std=c++20
-LDFLAGS = -lgsl
+LDFLAGS = -lgsl -lgslcblas -lm
 
 TARGET = main
 
