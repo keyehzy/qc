@@ -79,9 +79,10 @@ struct HermiteAuxiliary {
     }
   }
 
-  // https://arxiv.org/abs/1407.7786
-  static constexpr double hyp1f1(double a, double b, double x) noexcept {
-    #if 0
+  static double hyp1f1(double a, double b, double x) noexcept {
+    // Naive version is very bad for large values
+    // Use this in the future https://arxiv.org/abs/1407.7786
+#if 0
     constexpr double precision = 1e-12;
     constexpr int max_iterations = 150;
 
@@ -94,13 +95,13 @@ struct HermiteAuxiliary {
       term *= (a + k) / (b + k) * x / (k + 1);
       ++k;
     }
-    #else
+#else
     double result = boost::math::hypergeometric_1F1(a, b, x);
-    #endif
+#endif
     return result;
   }
 
-  static constexpr float boys(int n, float T) {
+  static float boys(int n, float T) {
     return hyp1f1(n + 0.5f, n + 1.5f, -T) / (2.0f * n + 1.0f);
   }
 
