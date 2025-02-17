@@ -3,7 +3,7 @@
 #include <vector>
 #include <cmath>
 #include <iostream>
-#include <boost/math/special_functions/hypergeometric_1F1.hpp>
+#include <gsl/gsl_sf_hyperg.h>
 
 #include "vec3.h"
 
@@ -96,7 +96,7 @@ struct HermiteAuxiliary {
       ++k;
     }
 #else
-    double result = boost::math::hypergeometric_1F1(a, b, x);
+    double result = gsl_sf_hyperg_1F1(a, b, x);
 #endif
     return result;
   }

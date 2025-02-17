@@ -1,5 +1,6 @@
 CXX = g++
-CXXFLAGS = -Wall -Wextra -g -std=c++20
+CXXFLAGS = -Wall -Wextra -g -O2 -std=c++20
+LDFLAGS = -lgsl
 
 TARGET = main
 
@@ -10,7 +11,7 @@ OBJECTS = $(SOURCES:.cpp=.o)
 all: $(TARGET)
 
 $(TARGET): $(OBJECTS)
-	$(CXX) $(CXXFLAGS) -o $(TARGET) $(OBJECTS)
+	$(CXX) $(CXXFLAGS) -o $(TARGET) $(OBJECTS) $(LDFLAGS)
 
 %.o: %.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@

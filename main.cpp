@@ -8,7 +8,7 @@
 #include "vec3.h"
 
 #include "basis_set.h"
-#include "basis_set/sto_3g.h"
+#include "basis_set/sto_3g_simplified.h"
 
 // https://chemistry.montana.edu/callis/courses/chmy564/460water.pdf
 
@@ -52,20 +52,19 @@ int main() {
 
   auto orbitals = cgto_from_basis_set(H2O, STO_3G);
 
-  for (auto orbital : orbitals) {
-    std::cout << orbital << std::endl;
-  }
+  std::vector<float> xs;
 
   std::cout << std::fixed;
-  for (size_t i = 0; i < orbitals.size(); i++) {
-    for (size_t j = 0; j < orbitals.size(); j++) {
-      float result = 0;
-      for (const Atom& atom : H2O) {
-        result += -atom.number * orbitals[i].nuclear(orbitals[j], atom.center);
+  for (const auto& orbital1 : orbitals) {
+    for (const auto& orbital2 : orbitals) {
+      for (const auto& orbital3 : orbitals) {
+        for (const auto& orbital4 : orbitals) {
+          xs.push_back(ContractedGaussianTypeOrbital::electron_repulsion(orbital1, orbital2, orbital3, orbital4));
+        }
       }
-      std::cout << result << " ";
     }
-    std::cout << "\n";
   }
+
+  std::cout << xs[20] << "\n";
 }
 
