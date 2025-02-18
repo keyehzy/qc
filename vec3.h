@@ -25,6 +25,10 @@ struct Vec3 {
     return std::sqrt(x*x+y*y+z*z);
   }
 
+  constexpr float norm2() const {
+    return x*x+y*y+z*z;
+  }
+
   friend constexpr Vec3 operator*(float a, const Vec3& b) {
     return b * a;
   }
