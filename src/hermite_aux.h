@@ -10,34 +10,34 @@
 
 struct HermiteAuxiliary {
   // Recursive version for reference
-  static constexpr float hermite_E_(int exponent1, int exponent2, int nodes,
-                                           float expTerm, float inv2p,
-                                           float qQalpha1, float qQalpha2) noexcept {
+  static constexpr double hermite_E_(int exponent1, int exponent2, int nodes,
+                                           double expTerm, double inv2p,
+                                           double qQalpha1, double qQalpha2) noexcept {
     if (nodes < 0 || nodes > exponent1 + exponent2) {
-      return 0.0f;
+      return 0.0;
     } else if (exponent1 == 0 && exponent2 == 0 && nodes == 0) {
       return expTerm;
     } else if (exponent2 == 0) {
-      float left = hermite_E_(exponent1 - 1, exponent2, nodes - 1, expTerm, inv2p, qQalpha1, qQalpha2);
-      float mid = hermite_E_(exponent1 - 1, exponent2, nodes, expTerm, inv2p, qQalpha1, qQalpha2);
-      float right = hermite_E_(exponent1 - 1, exponent2, nodes + 1, expTerm, inv2p, qQalpha1, qQalpha2);
+      double left = hermite_E_(exponent1 - 1, exponent2, nodes - 1, expTerm, inv2p, qQalpha1, qQalpha2);
+      double mid = hermite_E_(exponent1 - 1, exponent2, nodes, expTerm, inv2p, qQalpha1, qQalpha2);
+      double right = hermite_E_(exponent1 - 1, exponent2, nodes + 1, expTerm, inv2p, qQalpha1, qQalpha2);
       return inv2p * left - qQalpha1 * mid + (nodes + 1) * right;
     } else {
-      float left = hermite_E_(exponent1, exponent2 - 1, nodes - 1, expTerm, inv2p, qQalpha1, qQalpha2);
-      float mid = hermite_E_(exponent1, exponent2 - 1, nodes, expTerm, inv2p, qQalpha1, qQalpha2);
-      float right = hermite_E_(exponent1, exponent2 - 1, nodes + 1, expTerm, inv2p, qQalpha1, qQalpha2);
+      double left = hermite_E_(exponent1, exponent2 - 1, nodes - 1, expTerm, inv2p, qQalpha1, qQalpha2);
+      double mid = hermite_E_(exponent1, exponent2 - 1, nodes, expTerm, inv2p, qQalpha1, qQalpha2);
+      double right = hermite_E_(exponent1, exponent2 - 1, nodes + 1, expTerm, inv2p, qQalpha1, qQalpha2);
       return inv2p * left + qQalpha2 * mid + (nodes + 1) * right;
     }
   }
 
-static constexpr float hermite_E(int exponent1, int exponent2, int nodes,
-                                          float Q, float alpha1, float alpha2) noexcept {
-  float p = alpha1 + alpha2;
-  float q = (alpha1 * alpha2) / p;
-  float inv2p = 1.0f / (2.0f * p);
-  float qQalpha1 = q * Q / alpha1;
-  float qQalpha2 = q * Q / alpha2;
-  float expTerm = std::exp(-q * Q * Q);
+static constexpr double hermite_E(int exponent1, int exponent2, int nodes,
+                                          double Q, double alpha1, double alpha2) noexcept {
+  double p = alpha1 + alpha2;
+  double q = (alpha1 * alpha2) / p;
+  double inv2p = 1.0 / (2.0 * p);
+  double qQalpha1 = q * Q / alpha1;
+  double qQalpha2 = q * Q / alpha2;
+  double expTerm = std::exp(-q * Q * Q);
 
   return hermite_E_(exponent1, exponent2, nodes, expTerm, inv2p, qQalpha1, qQalpha2);
 }
@@ -48,35 +48,35 @@ static constexpr float hermite_E(int exponent1, int exponent2, int nodes,
     return  gsl_sf_hyperg_1F1(a, b, x);
   }
 
-  static float boys(int n, float T) {
+  static double boys(int n, double T) {
 #if 0
-    if (T > 10.0f) {
-      float a = double_factorial(2 * n - 1);
-      float b = std::pow(2, n + 1);
-      float c = std::pow(T,  n + 0.5f);
+    if (T > 10.0) {
+      double a = double_factorial(2 * n - 1);
+      double b = std::pow(2, n + 1);
+      double c = std::pow(T,  n + 0.5);
       return a * std::sqrt(M_PI) / b / c;
     }
 #endif
 
 #if 0
-    if (T < 0.5f) {
-      float a = n + 0.5f;
-      float b = n + 1.5f;
-      float num = 2.0f * b * (1.0f + b) + b * T - a * (2.0f + b) * T;
-      float denom = 2.0f * b * (1.0f + b) + (1.0f + a) * b * T;
-      return num / denom / (2.0f * n + 1.0f);
+    if (T < 0.5) {
+      double a = n + 0.5;
+      double b = n + 1.5;
+      double num = 2.0 * b * (1.0 + b) + b * T - a * (2.0 + b) * T;
+      double denom = 2.0 * b * (1.0 + b) + (1.0 + a) * b * T;
+      return num / denom / (2.0 * n + 1.0);
     }
 #endif
 
-    return hyp1f1(n + 0.5f, n + 1.5f, -T) / (2.0f * n + 1.0f);
+    return hyp1f1(n + 0.5, n + 1.5, -T) / (2.0 * n + 1.0);
   }
 
   // Recursive version for reference
-  static float hermite_R_(int i, int j, int k, int order, float p, const Vec3 &P, float T) noexcept {
-    float result = 0.0f;
+  static double hermite_R_(int i, int j, int k, int order, double p, const Vec3 &P, double T) noexcept {
+    double result = 0.0;
 
     if (i == 0 && j == 0 && k == 0) {
-      result += std::pow(-2.0f * p, order) * boys(order, T);
+      result += std::pow(-2.0 * p, order) * boys(order, T);
     } else if (i == 0 && j == 0) {
       if (k > 1) {
         result += (k - 1) * hermite_R_(i, j, k - 2, order + 1, p, P, T);
@@ -97,8 +97,8 @@ static constexpr float hermite_E(int exponent1, int exponent2, int nodes,
     return result;
   }
 
-  static float hermite_R(int i, int j, int k, int order, float p, const Vec3 &P) noexcept {
-    float T = p * P.norm2();
+  static double hermite_R(int i, int j, int k, int order, double p, const Vec3 &P) noexcept {
+    double T = p * P.norm2();
     return hermite_R_(i, j, k, order, p, P, T);
   }
 };

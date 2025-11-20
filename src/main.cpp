@@ -45,13 +45,14 @@ std::vector<ContractedGaussianTypeOrbital> cgto_from_basis_set(const std::vector
 
 int main() {
   std::vector<Atom> H2O {
-    Atom{"H", 1, Vec3{0, 1.43233673, -0.96104039}},
-    Atom{"H", 1, Vec3{0, -1.43233673, -0.96104039}},
-    Atom{"O", 8, Vec3{0, 0, 0.24026010}},
+    Atom{"O", 8, Vec3{0, -0.143225816552, 0}},
+    Atom{"H", 1, Vec3{1.638036840407, 1.136548822547, -0.96104039}},
+    Atom{"H", 1, Vec3{-1.638036840407, 1.136548822547, -0.96104039}},
   };
 
   auto orbitals = cgto_from_basis_set(H2O, STO_3G);
 
+  std::cout << "Overlap:\n";
   for (const auto& orbital1 : orbitals) {
     for (const auto& orbital2 : orbitals) {
         std::printf("%.04f ", orbital1.overlap(orbital2));
@@ -59,34 +60,39 @@ int main() {
     std::cout << "\n";
   }
 
-  return 0;
-
-  std::vector<float> xs;
-
+  int count = 0;
+  std::cout << "Electron repulsion:\n";
   for (const auto& orbital1 : orbitals) {
     for (const auto& orbital2 : orbitals) {
       for (const auto& orbital3 : orbitals) {
         for (const auto& orbital4 : orbitals) {
-          xs.push_back(ContractedGaussianTypeOrbital::electron_repulsion(orbital1, orbital2, orbital3, orbital4));
+          std::printf("%d %.15f\n", count++, ContractedGaussianTypeOrbital::electron_repulsion(orbital1, orbital2, orbital3, orbital4));
         }
       }
     }
   }
 
+
+    std::cout << "Kinetic:\n";
  for (size_t i = 0; i < orbitals.size(); i++) {
     for (size_t j = 0; j < orbitals.size(); j++) {
-      float result = 0;
+        std::printf("%.04f ", orbitals[i].kinetic(orbitals[j]));
+    }
+    std::cout << "\n";
+  }
+
+  std::cout << "Nuclear attraction:\n";
+ for (size_t i = 0; i < orbitals.size(); i++) {
+    for (size_t j = 0; j < orbitals.size(); j++) {
+      double result = 0;
       for (const Atom& atom : H2O) {
         result += -atom.number * orbitals[i].nuclear_attraction(orbitals[j], atom.center);
       }
-      xs.push_back(result);
+        std::printf("%.04f ", result);
     }
+    std::cout << "\n";
   }
 
-
- for (auto x : xs) {
-    std::cout << x << "\n";
- }
-
+  return 0;
 }
 

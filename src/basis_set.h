@@ -6,8 +6,8 @@
 
 struct ElectronShell {
   std::vector<int> angular_momentum;
-  std::vector<float> alphas;
-  std::vector<std::vector<float>> coefficients;
+  std::vector<double> alphas;
+  std::vector<std::vector<double>> coefficients;
 };
 
 struct Atom {

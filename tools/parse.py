@@ -135,7 +135,7 @@ def format_float(number_str):
     Returns:
         str: The formatted float literal (e.g., "0.3425250914E+01f").
     """
-    return number_str + "f"
+    return number_str
 
 
 def format_list(values, is_float=False):
