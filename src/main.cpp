@@ -52,8 +52,16 @@ int main() {
 
   auto orbitals = cgto_from_basis_set(H2O, STO_3G);
 
-  std::vector<float> xs;
+  for (const auto& orbital1 : orbitals) {
+    for (const auto& orbital2 : orbitals) {
+        std::printf("%.04f ", orbital1.overlap(orbital2));
+    }
+    std::cout << "\n";
+  }
 
+  return 0;
+
+  std::vector<float> xs;
 
   for (const auto& orbital1 : orbitals) {
     for (const auto& orbital2 : orbitals) {
@@ -76,7 +84,9 @@ int main() {
   }
 
 
- std::cout << xs[20] << "\n";
+ for (auto x : xs) {
+    std::cout << x << "\n";
+ }
 
 }
 

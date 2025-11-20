@@ -49,7 +49,7 @@ public:
   constexpr float overlap(const GaussianTypeOrbital& other) const noexcept {
     float total_norm = m_norm * other.m_norm;
     float total_coefficient = m_coefficient * other.m_coefficient;
-    return total_norm * total_coefficient * overlap(other);
+    return total_norm * total_coefficient * unnormalized_overlap(other);
   }
 
   constexpr float kinetic(const GaussianTypeOrbital& other) const noexcept {
