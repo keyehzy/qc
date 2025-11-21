@@ -61,11 +61,11 @@ std::vector<Atom> parse_geometry(const std::string& filename) {
 
   while (std::getline(file, line)) {
     std::istringstream iss(line);
-    int z;
+    double z;
     double v1, v2, v3;
 
     if (iss >> z >> v1 >> v2 >> v3) {
-        atoms.push_back({z, Vec3{v1,v2,v3}});
+        atoms.push_back({(int)z, Vec3{v1,v2,v3}});
     }
   }
 
@@ -164,11 +164,26 @@ Eigen::Tensor<double, 4> parse_matrix_5(const std::string& filename) {
 
 int main() {
   auto H2O = parse_geometry("./assets/h2o/STO-3G/geom.dat");
+  for (const auto& a : H2O) {
+    std::cout << a << std::endl;
+  }
   auto orbitals = cgto_from_basis_set(H2O, STO_3G);
 
-  auto bench_S = parse_matrix("./assets/h2o/STO-3G/s.dat");
-  std::cout << bench_S << "\n\n";
 
+  double nuc_repulsion = 0.0;
+  for (int i = 0; const auto& atom1 : H2O) {
+    for (int j = 0; const auto& atom2 : H2O) {
+      if (i < j) {
+        nuc_repulsion += atom1.number * atom2.number / (atom1.center - atom2.center).norm();
+      }
+      ++j;
+    }
+    ++i;
+  }
+  std::cout << nuc_repulsion << std::endl;
+
+
+  auto bench_S = parse_matrix("./assets/h2o/STO-3G/s.dat");
   Eigen::MatrixXd S = Eigen::MatrixXd::Zero(orbitals.size(), orbitals.size());
   for (int i = 0; const auto& orbital1 : orbitals) {
     for (int j = 0; const auto& orbital2 : orbitals) {
@@ -179,13 +194,10 @@ int main() {
     }
     ++i;
   }
-
-  std::cout << S << "\n\n";
+  std::cout << ((bench_S - S).matrix().norm() < 1e-3) << std::endl;
 
 
   auto bench_T = parse_matrix("./assets/h2o/STO-3G/t.dat");
-  std::cout << bench_T << "\n\n";
-
   Eigen::MatrixXd T = Eigen::MatrixXd::Zero(orbitals.size(), orbitals.size());
   for (int i = 0; const auto& orbital1 : orbitals) {
     for (int j = 0; const auto& orbital2 : orbitals) {
@@ -196,12 +208,10 @@ int main() {
     }
     ++i;
   }
+  std::cout << ((bench_T - T).matrix().norm() < 1e-3) << std::endl;
 
-  std::cout << T << "\n\n";
 
   auto bench_V = parse_matrix("./assets/h2o/STO-3G/v.dat");
-  std::cout << bench_V << "\n\n";
-
   Eigen::MatrixXd V = Eigen::MatrixXd::Zero(orbitals.size(), orbitals.size());
   for (int i = 0; const auto& orbital1 : orbitals) {
     for (int j = 0; const auto& orbital2 : orbitals) {
@@ -216,31 +226,60 @@ int main() {
     }
     ++i;
   }
+  std::cout << ((bench_V - V).matrix().norm() < 1e-3) << std::endl;
 
-  std::cout << V << "\n\n";
+
+  auto bench_mux = parse_matrix("./assets/h2o/STO-3G/mux.dat");
+  Eigen::MatrixXd mux = Eigen::MatrixXd::Zero(orbitals.size(), orbitals.size());
+  for (int i = 0; const auto& orbital1 : orbitals) {
+    for (int j = 0; const auto& orbital2 : orbitals) {
+      if (j <= i) {
+        mux(i,j) = orbital1.multipole(orbital2, {0,0,0}, {1,0,0});
+      }
+      ++j;
+    }
+    ++i;
+  }
+  std::cout << ((bench_mux - mux).matrix().norm() < 1e-3) << std::endl;
+
+  
+  auto bench_muy = parse_matrix("./assets/h2o/STO-3G/muy.dat");
+  Eigen::MatrixXd muy = Eigen::MatrixXd::Zero(orbitals.size(), orbitals.size());
+  for (int i = 0; const auto& orbital1 : orbitals) {
+    for (int j = 0; const auto& orbital2 : orbitals) {
+      if (j <= i) {
+        muy(i,j) = orbital1.multipole(orbital2, {0,0,0}, {0,1,0});
+      }
+      ++j;
+    }
+    ++i;
+  }
+  std::cout << ((bench_muy - muy).matrix().norm() < 1e-3) << std::endl;
+
+  
+  auto bench_muz = parse_matrix("./assets/h2o/STO-3G/muz.dat");
+  Eigen::MatrixXd muz = Eigen::MatrixXd::Zero(orbitals.size(), orbitals.size());
+  for (int i = 0; const auto& orbital1 : orbitals) {
+    for (int j = 0; const auto& orbital2 : orbitals) {
+      if (j <= i) {
+        muz(i,j) = orbital1.multipole(orbital2, {0,0,0}, {0,0,1});
+      }
+      ++j;
+    }
+    ++i;
+  }
+  std::cout << ((bench_muz - muz).matrix().norm() < 1e-3) << std::endl;
+
 
   auto bench_ERI = parse_matrix_5("./assets/h2o/STO-3G/eri.dat");
-
-  for (int i = 0; i < 7; i++) {
-    for (int j = 0; j < 7; j++) {
-      for (int k = 0; k < 7; k++) {
-        for (int l = 0; l < 7; l++) {
-          double value = bench_ERI(i,j,k,l);
-          if (std::abs(value) < 1e-6) continue;
-          std::printf("%d %d %d %d %f\n", i, j, k, l, value);
-        }
-      }
-    }
-  }
-  std::cout << "\n\n";
-
+  Eigen::Tensor<double, 4> ERI(7, 7, 7, 7);
+  ERI.setZero();
   for (int i = 0; const auto& orbital1 : orbitals) {
     for (int j = 0; const auto& orbital2 : orbitals) {
       for (int k = 0; const auto& orbital3 : orbitals) {
         for (int l = 0; const auto& orbital4 : orbitals) {
           double value = ContractedGaussianTypeOrbital::electron_repulsion(orbital1, orbital2, orbital3, orbital4);
-          if (std::abs(value) < 1e-6) continue;
-          std::printf("%d %d %d %d %f\n", i, j, k, l, value);
+          ERI(i, j, k, l) = value;
           ++l;
         }
         ++k;
@@ -249,6 +288,7 @@ int main() {
     }
     ++i;
   }
+  std::cout << ((bench_ERI - ERI).abs() < 1e-3 ).all() << std::endl;
 
   return 0;
 }

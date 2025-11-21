@@ -8,6 +8,14 @@
 #include "factorial.h"
 #include "hermite_aux.h"
 
+static constexpr double binomial(int n, int k) noexcept {
+  if (k < 0 || k > n) return 0.0;
+  double res = 1.0;
+  for (int i = 1; i <= k; ++i)
+    res = res * (n - i + 1) / i;
+  return res;
+}
+
 class Gaussian {
 public:
   constexpr Gaussian(double center, int exponent, double alpha) :
@@ -20,6 +28,19 @@ public:
 
   constexpr double overlap(const Gaussian& other, int nodes = 0) const noexcept {
     return HermiteAuxiliary::hermite_E(m_exponent, other.m_exponent, nodes, m_center - other.m_center, m_alpha, other.m_alpha);
+  }
+
+  constexpr double moment(const Gaussian& other, int order, double origin) const noexcept {
+    double result = 0.0;
+    double dist_A_Origin = m_center - origin;
+    double p = m_alpha + other.m_alpha;
+
+    for (int k = 0; k <= order; ++k) {
+      double term_prefactor = binomial(order, k) * std::pow(dist_A_Origin, order - k);
+      double overlap_component = HermiteAuxiliary::hermite_E(m_exponent + k, other.m_exponent, 0, m_center - other.m_center, m_alpha, other.m_alpha);
+      result += term_prefactor * overlap_component;
+    }
+    return -result * std::sqrt(M_PI / p);
   }
 
   friend std::ostream& operator<<(std::ostream& os, const Gaussian& g);
@@ -126,6 +147,17 @@ public:
     double total_norm = gto1.norm() * gto2.norm() * gto3.norm() * gto4.norm();
     double total_coefficient = gto1.coefficient() * gto2.coefficient() * gto3.coefficient() * gto4.coefficient();
     return prefactor * total_norm * total_coefficient * result;
+  }
+
+  constexpr double multipole(const GaussianTypeOrbital& other, const Vec3& origin, Exponent moments) const noexcept {
+    double ix = m_A.moment(other.m_A, moments.i, origin.x);
+    double iy = m_B.moment(other.m_B, moments.j, origin.y);
+    double iz = m_C.moment(other.m_C, moments.k, origin.z);
+
+    double total_norm = m_norm * other.m_norm;
+    double total_coefficient = m_coefficient * other.m_coefficient;
+
+    return total_coefficient * total_norm * ix * iy * iz;
   }
 
   constexpr double alpha() const noexcept {
@@ -249,6 +281,16 @@ public:
             result += GaussianTypeOrbital::electron_repulsion(gto1, gto2, gto3, gto4);
           }
         }
+      }
+    }
+    return result;
+  }
+
+  constexpr double multipole(const ContractedGaussianTypeOrbital& other, const Vec3& origin, GaussianTypeOrbital::Exponent moments) const noexcept {
+    double result = 0;
+    for (const auto& gto1 : m_gtos) {
+      for (const auto& gto2 : other.m_gtos) {
+        result += gto1.multipole(gto2, origin, moments);
       }
     }
     return result;

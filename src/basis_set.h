@@ -3,6 +3,9 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <ostream>
+
+#include "vec3.h"
 
 struct Shell {
   std::vector<int> angular_momentum;
@@ -13,6 +16,9 @@ struct Shell {
 struct Atom {
   int number;
   Vec3 center;
+
+  friend std::ostream& operator<<(std::ostream& os, const Atom& a);
 };
+
 
 using BasisSet = std::map<int, std::vector<Shell>>;
