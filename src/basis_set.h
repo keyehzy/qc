@@ -6,6 +6,7 @@
 #include <ostream>
 
 #include "vec3.h"
+#include "orbital.h"
 
 struct Shell {
   std::vector<int> angular_momentum;
@@ -20,5 +21,6 @@ struct Atom {
   friend std::ostream& operator<<(std::ostream& os, const Atom& a);
 };
 
-
 using BasisSet = std::map<int, std::vector<Shell>>;
+
+std::vector<ContractedGaussianTypeOrbital> convert(const std::vector<Atom>& molecule, const BasisSet& basis_set);

@@ -1,0 +1,265 @@
+#include <iostream>
+#include <cassert>
+#include <algorithm>
+
+#include "factorial.h"
+#include "hermite_aux.h"
+#include "orbital.h"
+#include "vec3.h"
+
+#include "basis_set.h"
+#include "basis_set/sto_3g_simplified.h"
+
+#include <fstream>
+#include <eigen3/Eigen/Dense>
+#include <eigen3/unsupported/Eigen/CXX11/Tensor>
+
+
+// https://chemistry.montana.edu/callis/courses/chmy564/460water.pdf
+
+
+std::vector<Atom> parse_geometry(const std::string& filename) {
+    std::ifstream file(filename);
+    if (!file.is_open()) {
+        throw std::runtime_error("Could not open file: " + filename);
+    }
+
+  std::string line;
+  std::getline(file, line); // Skip first line
+
+  std::vector<Atom> atoms;
+
+  while (std::getline(file, line)) {
+    std::istringstream iss(line);
+    double z;
+    double v1, v2, v3;
+
+    if (iss >> z >> v1 >> v2 >> v3) {
+        atoms.push_back({(int)z, Vec3{v1,v2,v3}});
+    }
+  }
+
+  return atoms;
+}
+
+
+Eigen::MatrixXd parse_matrix(const std::string& filename) {
+    std::ifstream file(filename);
+    if (!file.is_open()) {
+        throw std::runtime_error("Could not open file: " + filename);
+    }
+
+    using Triplet = std::tuple<int, int, double>;
+
+    std::vector<Triplet> triplets;
+    std::string line;
+    int max_row = 0;
+    int max_col = 0;
+
+    while (std::getline(file, line)) {
+        std::istringstream iss(line);
+        int i, j;
+        double value;
+
+        if (iss >> i >> j >> value) {
+            i--;
+            j--;
+
+            triplets.emplace_back(i, j, value);
+            max_row = std::max(max_row, i);
+            max_col = std::max(max_col, j);
+        }
+    }
+
+    int rows = max_row + 1;
+    int cols = max_col + 1;
+
+    Eigen::MatrixXd matrix = Eigen::MatrixXd::Zero(rows, cols);
+    for (const auto& triplet : triplets) {
+        auto [row, col, value] = triplet;
+        matrix(row, col) = value;
+    }
+
+    return matrix;
+}
+
+Eigen::Tensor<double, 4> parse_tensor(const std::string& filename) {
+    std::ifstream file(filename);
+    if (!file.is_open()) {
+        throw std::runtime_error("Could not open file: " + filename);
+    }
+
+    using Tuple = std::tuple<int, int, int, int, double>;
+
+    std::vector<Tuple> tuples;
+    std::string line;
+    int max_i = 0;
+    int max_j = 0;
+    int max_k = 0;
+    int max_l = 0;
+
+    while (std::getline(file, line)) {
+        std::istringstream iss(line);
+        int i, j, k, l;
+        double value;
+
+        if (iss >> i >> j >> k >> l >> value) {
+            i--;
+            j--;
+            k--;
+            l--;
+
+            tuples.emplace_back(i, j, k, l, value);
+            max_i = std::max(max_i, i);
+            max_j = std::max(max_j, j);
+            max_k = std::max(max_k, k);
+            max_l = std::max(max_l, l);
+        }
+    }
+
+    int is = max_i + 1;
+    int js = max_j + 1;
+    int ks = max_k + 1;
+    int ls = max_l + 1;
+
+    Eigen::Tensor<double, 4> tensor(is, js, ks, ls);
+    tensor.setZero();
+    for (const auto& tuple : tuples) {
+        auto [i, j, k, l, value] = tuple;
+        tensor(i, j, k, l) = value;
+    }
+
+    return tensor;
+}
+
+int main() {
+  auto H2O = parse_geometry("./assets/h2o/STO-3G/geom.dat");
+  for (const auto& a : H2O) {
+    std::cout << a << std::endl;
+  }
+  auto orbitals = convert(H2O, STO_3G);
+
+
+  double nuc_repulsion = 0.0;
+  for (int i = 0; const auto& atom1 : H2O) {
+    for (int j = 0; const auto& atom2 : H2O) {
+      if (i < j) {
+        nuc_repulsion += atom1.number * atom2.number / (atom1.center - atom2.center).norm();
+      }
+      ++j;
+    }
+    ++i;
+  }
+  std::cout << nuc_repulsion << std::endl;
+
+
+  auto bench_S = parse_matrix("./assets/h2o/STO-3G/s.dat");
+  Eigen::MatrixXd S = Eigen::MatrixXd::Zero(orbitals.size(), orbitals.size());
+  for (int i = 0; const auto& orbital1 : orbitals) {
+    for (int j = 0; const auto& orbital2 : orbitals) {
+        if (j <= i) {
+          S(i,j) = orbital1.overlap(orbital2);
+        }
+        ++j;
+    }
+    ++i;
+  }
+  std::cout << ((bench_S - S).matrix().norm() < 1e-3) << std::endl;
+
+
+  auto bench_T = parse_matrix("./assets/h2o/STO-3G/t.dat");
+  Eigen::MatrixXd T = Eigen::MatrixXd::Zero(orbitals.size(), orbitals.size());
+  for (int i = 0; const auto& orbital1 : orbitals) {
+    for (int j = 0; const auto& orbital2 : orbitals) {
+      if (j <= i) {
+        T(i,j) = orbital1.kinetic(orbital2);
+      }
+      ++j;
+    }
+    ++i;
+  }
+  std::cout << ((bench_T - T).matrix().norm() < 1e-3) << std::endl;
+
+
+  auto bench_V = parse_matrix("./assets/h2o/STO-3G/v.dat");
+  Eigen::MatrixXd V = Eigen::MatrixXd::Zero(orbitals.size(), orbitals.size());
+  for (int i = 0; const auto& orbital1 : orbitals) {
+    for (int j = 0; const auto& orbital2 : orbitals) {
+      if (j <= i) {
+        double result = 0;
+        for (const Atom& atom : H2O) {
+          result += -atom.number * orbital1.nuclear_attraction(orbital2, atom.center);
+        }
+        V(i,j) = result;
+      }
+      ++j;
+    }
+    ++i;
+  }
+  std::cout << ((bench_V - V).matrix().norm() < 1e-3) << std::endl;
+
+
+  auto bench_mux = parse_matrix("./assets/h2o/STO-3G/mux.dat");
+  Eigen::MatrixXd mux = Eigen::MatrixXd::Zero(orbitals.size(), orbitals.size());
+  for (int i = 0; const auto& orbital1 : orbitals) {
+    for (int j = 0; const auto& orbital2 : orbitals) {
+      if (j <= i) {
+        mux(i,j) = orbital1.multipole(orbital2, {0,0,0}, {1,0,0});
+      }
+      ++j;
+    }
+    ++i;
+  }
+  std::cout << ((bench_mux - mux).matrix().norm() < 1e-3) << std::endl;
+
+  
+  auto bench_muy = parse_matrix("./assets/h2o/STO-3G/muy.dat");
+  Eigen::MatrixXd muy = Eigen::MatrixXd::Zero(orbitals.size(), orbitals.size());
+  for (int i = 0; const auto& orbital1 : orbitals) {
+    for (int j = 0; const auto& orbital2 : orbitals) {
+      if (j <= i) {
+        muy(i,j) = orbital1.multipole(orbital2, {0,0,0}, {0,1,0});
+      }
+      ++j;
+    }
+    ++i;
+  }
+  std::cout << ((bench_muy - muy).matrix().norm() < 1e-3) << std::endl;
+
+  
+  auto bench_muz = parse_matrix("./assets/h2o/STO-3G/muz.dat");
+  Eigen::MatrixXd muz = Eigen::MatrixXd::Zero(orbitals.size(), orbitals.size());
+  for (int i = 0; const auto& orbital1 : orbitals) {
+    for (int j = 0; const auto& orbital2 : orbitals) {
+      if (j <= i) {
+        muz(i,j) = orbital1.multipole(orbital2, {0,0,0}, {0,0,1});
+      }
+      ++j;
+    }
+    ++i;
+  }
+  std::cout << ((bench_muz - muz).matrix().norm() < 1e-3) << std::endl;
+
+
+  auto bench_ERI = parse_tensor("./assets/h2o/STO-3G/eri.dat");
+  Eigen::Tensor<double, 4> ERI(7, 7, 7, 7);
+  ERI.setZero();
+  for (int i = 0; const auto& orbital1 : orbitals) {
+    for (int j = 0; const auto& orbital2 : orbitals) {
+      for (int k = 0; const auto& orbital3 : orbitals) {
+        for (int l = 0; const auto& orbital4 : orbitals) {
+          double value = ContractedGaussianTypeOrbital::electron_repulsion(orbital1, orbital2, orbital3, orbital4);
+          ERI(i, j, k, l) = value;
+          ++l;
+        }
+        ++k;
+      }
+      ++j;
+    }
+    ++i;
+  }
+  std::cout << ((bench_ERI - ERI).abs() < 1e-3 ).all() << std::endl;
+
+  return 0;
+}
+

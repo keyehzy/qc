@@ -1,10 +1,10 @@
 CXX = g++
-CXXFLAGS = -Wall -Wextra -g -O2 -std=c++20
-LDFLAGS = -lgsl -lgslcblas -lm
+CXXFLAGS = -Wall -Wextra -g -O2 -std=c++20 -I/opt/homebrew/Cellar/gsl/2.8/include -I/opt/homebrew/Cellar/eigen/3.4.0_1/include
+LDFLAGS = -lgsl -lgslcblas -lm -L/opt/homebrew/Cellar/gsl/2.8/lib
 
 TARGET = main
 
-SOURCES = main.cpp orbital.cpp
+SOURCES = src/main.cpp src/orbital.cpp src/basis_set.cpp
 
 OBJECTS = $(SOURCES:.cpp=.o)
 
