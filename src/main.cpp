@@ -28,7 +28,7 @@ std::vector<GaussianTypeOrbital::Exponent> find_exponents(int N) {
 std::vector<ContractedGaussianTypeOrbital> cgto_from_basis_set(const std::vector<Atom>& molecule, const BasisSet& basis_set) {
   std::vector<ContractedGaussianTypeOrbital> result;
   for(const auto& atom : molecule) {
-    for (const auto& shell : basis_set.at(atom.name)) {
+    for (const auto& shell : basis_set.at(atom.number)) {
       for (int a : shell.angular_momentum) {
         for (const auto& exponent : find_exponents(a)) {
           std::vector<ContractedGaussianTypeOrbital::Param> params;
@@ -43,11 +43,13 @@ std::vector<ContractedGaussianTypeOrbital> cgto_from_basis_set(const std::vector
   return result;
 }
 
+
+
 int main() {
   std::vector<Atom> H2O {
-    Atom{"O", 8, Vec3{0, -0.143225816552, 0}},
-    Atom{"H", 1, Vec3{1.638036840407, 1.136548822547, -0.96104039}},
-    Atom{"H", 1, Vec3{-1.638036840407, 1.136548822547, -0.96104039}},
+    Atom{8, Vec3{0, -0.143225816552, 0}},
+    Atom{1, Vec3{1.638036840407, 1.136548822547, -0.96104039}},
+    Atom{1, Vec3{-1.638036840407, 1.136548822547, -0.96104039}},
   };
 
   auto orbitals = cgto_from_basis_set(H2O, STO_3G);
