@@ -16,3 +16,4 @@
 - https://repository.royalholloway.ac.uk/file/ec6faa41-df71-4c72-ad0d-4795b0afe5d9/1/10097516.pdf
 - https://www.esqc.org/lectures/WK3.pdf
 - J. Chem. Phys. 65, 111 (1976); doi:10.1063/1.432807
+- https://pycrawfordprogproj.readthedocs.io/en/latest/Project_03/Project_03.html

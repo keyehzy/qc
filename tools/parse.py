@@ -29,7 +29,7 @@ def generate_electron_shell(shell):
 
 def generate_basis_set(basis_data):
     basis_name = basis_data.get("name", "BASIS_SET")
-    cpp_var_name = basis_name.replace("-", "_")
+    cpp_var_name = basis_name.replace("-", "_") .replace(" ", "_") .replace("(", "_") .replace(")", "_") .replace(",", "_") .replace("+", "_plus_") .replace("*","_star_")
 
     elements = basis_data.get("elements", {})
 
@@ -47,7 +47,7 @@ def generate_basis_set(basis_data):
 
     cpp_code = (
         "#pragma once\n\n"
-        f"static BasisSet {cpp_var_name} {{\n"
+        f"static BasisSet BS_{cpp_var_name} {{\n"
         "  {\n"
         f"{elements_str}\n"
         "  }\n"
