@@ -8,7 +8,7 @@
 #include "vec3.h"
 
 #include "basis_set.h"
-#include "basis_set/6-31g.h"
+#include "basis_set/sto-3g.h"
 #include "hartree_fock.h"
 
 #include <fstream>
@@ -42,7 +42,7 @@ std::vector<Atom> parse_molecule(const std::string& filename) {
 
 int main() {
   auto molecule = parse_molecule("./assets/benzene_geom.txt");
-  auto orbitals = convert(molecule, BS_6_31G);
+  auto orbitals = convert(molecule, BS_STO_3G);
 
   int n_electrons = 6 * 6 + 6;
   auto integrals = HartreeFock::InputIntegrals(molecule, orbitals);

@@ -26,15 +26,7 @@ Result run_scf(const InputIntegrals& input, int n_electrons) {
     Eigen::MatrixXd H_ortho = X.transpose() * H_core * X;
     Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> eig_H(H_ortho);
     Eigen::MatrixXd C = X * eig_H.eigenvectors();
-    
-    Eigen::MatrixXd P = Eigen::MatrixXd::Zero(norb, norb);
-    for (int i = 0; i < norb; ++i) {
-      for (int j = 0; j < norb; ++j) {
-        for (int k = 0; k < n_occ; ++k) {
-            P(i, j) += 2.0 * C(i, k) * C(j, k);
-        }
-      }
-    }
+    Eigen::MatrixXd P = 2.0 * C * C.transpose();
   
     // Step 3: SCF iterations
     Eigen::MatrixXd P_prev;
@@ -71,14 +63,8 @@ Result run_scf(const InputIntegrals& input, int n_electrons) {
       C = X * C_ortho;
       
       // New density
-      P.setZero();
-      for (int i = 0; i < norb; ++i) {
-        for (int j = 0; j < norb; ++j) {
-          for (int k = 0; k < n_occ; ++k) {
-            P(i, j) += 2.0 * C(i, k) * C(j, k);
-          }
-        }
-      }
+      auto C_occ = C.leftCols(n_occ);
+      P = 2.0 * C_occ * C_occ.transpose();
       
       // Energy
       const double E_elec = 0.5 * (P.cwiseProduct(H_core + F)).sum();
