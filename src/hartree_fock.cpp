@@ -27,33 +27,41 @@ Result run_scf(const InputIntegrals& input, int n_electrons) {
     Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> eig_H(H_ortho);
     Eigen::MatrixXd C = X * eig_H.eigenvectors();
     Eigen::MatrixXd P = 2.0 * C * C.transpose();
-  
+
     // Step 3: SCF iterations
-    Eigen::MatrixXd P_prev;
+    Eigen::MatrixXd P_prev = Eigen::MatrixXd::Zero(P.rows(), P.cols());
     double E_elec_prev = 0.0;
     
     std::cout << "\nStarting SCF iterations...\n" << std::endl;
     
     for (int iter = 0; iter < max_iter; ++iter) {
-        P_prev = P;
-        
+      P_prev.swap(P);
+
+      // Map to Tensor
+      Eigen::TensorMap<Eigen::Tensor<double, 2>> P_tensor(P.data(), norb, norb);
+      
+      // Coulomb J
+      // J_ij = Sum_kl (ij|kl) * P_kl
+      // Contract ERI dims 2,3 with P dims 0,1
+      Eigen::array<Eigen::IndexPair<int>, 2> j_contract = {
+        Eigen::IndexPair<int>(2, 0),  // k
+        Eigen::IndexPair<int>(3, 1)   // l
+      };
+      Eigen::Tensor<double, 2> J_tensor = input.ERI.contract(P_tensor, j_contract);
+      Eigen::MatrixXd J = Eigen::Map<Eigen::MatrixXd>(J_tensor.data(), norb, norb);
+
+      // Exchange K
+      // K_ij = Sum_kl (ik|jl) * P_kl
+      // Contract ERI dim 1 (k) with P dim 0, and ERI dim 3 (l) with P dim 1
+      Eigen::array<Eigen::IndexPair<int>, 2> k_contract = {
+          Eigen::IndexPair<int>(1, 0),  // k
+          Eigen::IndexPair<int>(3, 1)   // l
+      };
+      Eigen::Tensor<double, 2> K_tensor = input.ERI.contract(P_tensor, k_contract);
+      Eigen::MatrixXd K = Eigen::Map<Eigen::MatrixXd>(K_tensor.data(), norb, norb);
+      
       // Build Fock matrix
-      Eigen::MatrixXd F = Eigen::MatrixXd::Zero(norb, norb);
-      for (int i = 0; i < norb; ++i) {
-        for (int j = 0; j <= i; ++j) {
-          double G = 0.0;
-          for (int k = 0; k < norb; ++k) {
-            for (int l = 0; l < norb; ++l) {
-              const double P_kl = P(k, l);
-              const double coulomb = input.ERI(i, j, k, l);
-              const double exchange = input.ERI(i, k, j, l);
-              G += P_kl * (coulomb - 0.5 * exchange);
-            }
-          }
-          F(i, j) = H_core(i, j) + G;
-          F(j, i) = F(i, j);
-        }
-      }
+      Eigen::MatrixXd F = H_core + J - 0.5 * K;
       
       // Diagonalize Fock
       const Eigen::MatrixXd F_ortho = X.transpose() * F * X;
@@ -63,7 +71,7 @@ Result run_scf(const InputIntegrals& input, int n_electrons) {
       C = X * C_ortho;
       
       // New density
-      auto C_occ = C.leftCols(n_occ);
+      const auto C_occ = C.leftCols(n_occ);
       P = 2.0 * C_occ * C_occ.transpose();
       
       // Energy

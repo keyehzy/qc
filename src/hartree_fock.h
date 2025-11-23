@@ -90,15 +90,16 @@ struct InputIntegrals {
     
     // Nuclear repulsion
     nuc_repulsion = 0.0;
-#pragma omp parallel for
+#pragma omp parallel for reduction(+:nuc_repulsion)
     for (int i = 0; i < molecule.size(); ++i) {
-      for (int j = 0; j < molecule.size(); ++j) {
-        if (i < j) {
-          nuc_repulsion += molecule[i].number * molecule[j].number / (molecule[i].center - molecule[j].center).norm();
-        }
+      for (int j = 0; j < i; ++j) {
+        nuc_repulsion += molecule[i].number * molecule[j].number / (molecule[i].center - molecule[j].center).norm();
       }
     }  
-  }
+
+
+
+}
 };
 
 struct Result {
