@@ -46,7 +46,7 @@ int main() {
 
   int n_electrons = 10;
   auto integrals = InputIntegrals(molecule, orbitals);
-  auto xc_grid = SCF_LDA::build_xc_grid(molecule, orbitals);
+  auto xc_grid = SCF_LDA::uniform_grid::build_xc_grid(molecule, orbitals);
   auto result = SCF_LDA::run_scf(integrals, xc_grid, n_electrons);
   return 0;
 }
