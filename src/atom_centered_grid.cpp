@@ -31,7 +31,7 @@ void compute_gauss_legendre(int n, std::vector<double>& x, std::vector<double>& 
         w[n - 1 - i] = w[i];
     }
 }
-}
+} // namespace
 
 struct RadialPoint { 
     double r;
@@ -77,13 +77,13 @@ double get_becke_weight(const Vec3& r, int atom_idx, const std::vector<Atom>& at
     for (size_t b = 0; b < atoms.size(); ++b) {
         if (b == (size_t)atom_idx) continue;
         
-        // Distance to neighbor
+        // Distance to neighbor (can use Vec3 here)
         double dx_b = r.x - atoms[b].center.x;
         double dy_b = r.y - atoms[b].center.y;
         double dz_b = r.z - atoms[b].center.z;
         double dist_B = std::sqrt(dx_b*dx_b + dy_b*dy_b + dz_b*dz_b);
         
-        // Distance between nuclei
+        // Distance between nuclei (can use Vec3 here)
         double dx_ab = atoms[atom_idx].center.x - atoms[b].center.x;
         double dy_ab = atoms[atom_idx].center.y - atoms[b].center.y;
         double dz_ab = atoms[atom_idx].center.z - atoms[b].center.z;
@@ -105,7 +105,7 @@ double get_becke_weight(const Vec3& r, int atom_idx, const std::vector<Atom>& at
 }
 
 // Normalizes the weights across all atoms
-void apply_becke_weights(std::vector<GridPoint>& grid_points const std::vector<Atom>& atoms) {
+void apply_becke_weights(std::vector<GridPoint>& grid_points, const std::vector<Atom>& atoms) {
     for (size_t i = 0; i < grid_points.size(); ++i) {
         Vec3 r = grid_points[i].r;
         
@@ -156,7 +156,7 @@ XC_Grid build_xc_grid(const std::vector<Atom>& atoms, const std::vector<Contract
                 // Pruning: Skip points with negligible weight (e.g. very far out)
                 if (w < 1e-14) continue;
 
-                xc.points.push_back({{x, y, z}, w, a});
+                xc.points.push_back({{x, y, z}, w, (int)a});
             }
         }
     }

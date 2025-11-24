@@ -5,7 +5,7 @@ LDFLAGS = -lgsl -lgslcblas -lm -L/opt/homebrew/Cellar/gsl/2.8/lib -L/opt/homebre
 
 TARGET = main
 
-SOURCES = src/main.cpp src/orbital.cpp src/basis_set.cpp src/hartree_fock.cpp src/lda.cpp src/uniform_grid.cpp
+SOURCES = src/main.cpp src/orbital.cpp src/basis_set.cpp src/hartree_fock.cpp src/lda.cpp src/uniform_grid.cpp src/atom_centered_grid.cpp
 
 OBJECTS = $(SOURCES:.cpp=.o)
 

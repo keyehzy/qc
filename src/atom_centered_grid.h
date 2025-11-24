@@ -1,5 +1,9 @@
 #pragma once
 
+#include "orbital.h"
+#include "basis_set.h"
+
+#include <eigen3/Eigen/Dense>
 namespace SCF_LDA {
 namespace atom_centered_grid {
 struct GridPoint {

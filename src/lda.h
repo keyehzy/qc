@@ -1,12 +1,12 @@
 #pragma once
 
 #include "input_integrals.h"
-#include "uniform_grid.h"
+#include "atom_centered_grid.h"
 
 #include <eigen3/Eigen/Dense>
 
 namespace SCF_LDA {
-using namespace uniform_grid;
+using namespace atom_centered_grid;
 
 struct Result {
   double energy;

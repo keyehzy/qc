@@ -29,14 +29,12 @@ Result run_scf(const InputIntegrals& input, int n_electrons) {
     Eigen::MatrixXd P = 2.0 * C * C.transpose();
 
     // Step 3: SCF iterations
-    Eigen::MatrixXd P_prev = Eigen::MatrixXd::Zero(P.rows(), P.cols());
+    Eigen::MatrixXd P_prev = P;
     double E_elec_prev = 0.0;
     
     std::cout << "\nStarting SCF iterations...\n" << std::endl;
     
     for (int iter = 0; iter < max_iter; ++iter) {
-      P_prev.swap(P);
-
       // Map to Tensor
       Eigen::TensorMap<Eigen::Tensor<double, 2>> P_tensor(P.data(), norb, norb);
       
@@ -83,6 +81,7 @@ Result run_scf(const InputIntegrals& input, int n_electrons) {
       const double deltaE = std::abs(E_elec - E_elec_prev);
       
       std::cout << "Iter " << std::setw(3) << iter + 1 
+                << ": E_elec = " << std::fixed << std::setprecision(10) << E_elec
                 << ": E = " << std::fixed << std::setprecision(10) << E_total
                 << ", ΔE = " << std::scientific << deltaE
                 << ", RMSD = " << rmsd << std::endl;
@@ -93,6 +92,7 @@ Result run_scf(const InputIntegrals& input, int n_electrons) {
       }
       
       E_elec_prev = E_elec;
+      P_prev = P;
   }
   
   throw std::runtime_error("SCF failed to converge!");
