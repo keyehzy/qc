@@ -9,7 +9,7 @@
 
 #include "basis_set.h"
 #include "basis_set/sto-3g.h"
-#include "hartree_fock.h"
+#include "lda.h"
 
 #include <fstream>
 #include <eigen3/Eigen/Dense>
@@ -41,12 +41,13 @@ std::vector<Atom> parse_molecule(const std::string& filename) {
 
 
 int main() {
-  auto molecule = parse_molecule("./assets/benzene_geom.txt");
+  auto molecule = parse_molecule("./assets/h2o/STO-3G/geom.dat");
   auto orbitals = convert(molecule, BS_STO_3G);
 
-  int n_electrons = 6 * 6 + 6;
+  int n_electrons = 10;
   auto integrals = InputIntegrals(molecule, orbitals);
-  auto result = HartreeFock::run_scf(integrals, n_electrons);
+  auto xc_grid = SCF_LDA::build_xc_grid(molecule, orbitals);
+  auto result = SCF_LDA::run_scf(integrals, xc_grid, n_electrons);
   return 0;
 }
 
