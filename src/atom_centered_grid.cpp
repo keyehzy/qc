@@ -1,6 +1,6 @@
 #include "atom_centered_grid.h"
 
-#include "lebedev_15.h"
+#include "lebedev/lebedev_015.h"
 
 namespace SCF_LDA {
 namespace atom_centered_grid {
@@ -135,7 +135,7 @@ XC_Grid build_xc_grid(const std::vector<Atom>& atoms, const std::vector<Contract
     const int n_rad = 40; 
     const double r_scale = 1.5;  // Bragg radius
     
-    const auto& leb_grid = lebedev_15;
+    const auto& leb_grid = lebedev_015;
     auto rad_grid = build_radial_grid(n_rad, r_scale);
 
     // Loop over all atoms and build local grids

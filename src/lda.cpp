@@ -201,7 +201,7 @@ Result run_scf(const InputIntegrals& input, const XC_Grid& xc, int n_electrons) 
     const int n_occ = n_electrons / 2;
     const double convergence = 1e-6;
     const int max_iter = 50;
-    const double mixing = 0.5;
+    const double mixing = 0.1;
     
     // Step 1: Core Hamiltonian & Orthogonalizer
     const Eigen::MatrixXd H_core = input.T + input.V;
