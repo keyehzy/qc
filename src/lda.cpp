@@ -4,7 +4,7 @@
 #include <iomanip>
 
 namespace SCF_LDA {
-std::vector<GridPoint> build_uniform_grid(const std::vector<Atom>& atoms, double padding = 3.0, int nperdim = 10) {
+std::vector<GridPoint> build_uniform_grid(const std::vector<Atom>& atoms, double padding = 3.0, int nperdim = 50) {
     // crude bounding box around molecule
     Vec3 min = atoms[0].center;
     Vec3 max = atoms[0].center;
@@ -56,22 +56,13 @@ XC_Grid build_xc_grid(const std::vector<Atom>& atoms, const std::vector<Contract
     return xc;
 }
 
-Eigen::VectorXd compute_density_on_grid(const Eigen::MatrixXd& P,
-                                        const XC_Grid& xc) {
-    int n_grid = static_cast<int>(xc.points.size());
-    int norb   = static_cast<int>(P.rows());
-    Eigen::VectorXd rho(n_grid);
-    for (int g = 0; g < n_grid; ++g) {
-        double r = 0.0;
-        for (int mu = 0; mu < norb; ++mu) {
-            double phi_mu = xc.phi(g, mu);
-            for (int nu = 0; nu < norb; ++nu) {
-                r += P(mu, nu) * phi_mu * xc.phi(g, nu);
-            }
-        }
-        rho(g) = r;
-    }
-    return rho;
+Eigen::VectorXd compute_density_on_grid(const Eigen::MatrixXd& P, const XC_Grid& xc) {
+    // 1. Temp = Phi * P (N_grid x N_orb)
+    Eigen::MatrixXd Temp = xc.phi * P; 
+    
+    // 2. Row-wise dot product
+    // rho(g) = dot(Temp.row(g), phi.row(g))
+    return (Temp.cwiseProduct(xc.phi)).rowwise().sum();
 }
 
 struct LDA_Slater {
@@ -262,6 +253,7 @@ Result run_scf(const InputIntegrals& input, const XC_Grid& xc, int n_electrons) 
     const int n_occ = n_electrons / 2;
     const double convergence = 1e-6;
     const int max_iter = 50;
+    const double mixing = 0.5;
     
     // Step 1: Core Hamiltonian & Orthogonalizer
     const Eigen::MatrixXd H_core = input.T + input.V;
@@ -331,6 +323,8 @@ Result run_scf(const InputIntegrals& input, const XC_Grid& xc, int n_electrons) 
       const double deltaE = std::abs(E_total - E_total_prev);
       
       std::cout << "Iter " << std::setw(3) << iter + 1 
+                << ": E_one_e = " << std::fixed << std::setprecision(10) << E_one_e
+                << ": E_coul = " << std::fixed << std::setprecision(10) << E_coul
                 << ": E = " << std::fixed << std::setprecision(10) << E_total
                 << ", ΔE = " << std::scientific << deltaE
                 << ", RMSD = " << rmsd << std::endl;
@@ -341,6 +335,7 @@ Result run_scf(const InputIntegrals& input, const XC_Grid& xc, int n_electrons) 
       }
       
       E_total_prev = E_total;
+      P = (1.0 - mixing) * P_prev + mixing * P;
       P_prev = P;
   }
   

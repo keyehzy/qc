@@ -20,3 +20,4 @@
 - https://pubchem.ncbi.nlm.nih.gov/compound/962
 - https://psicode.org/psi4manual/4.0b3/psithoninput.html
 - https://vergil.chemistry.gatech.edu/static/content/DFT-intro.pdf
+- https://github.com/pwborthwick/kspy-gga

@@ -1,0 +1,1694 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 14.2' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[     64086,       1686]
+NotebookOptionsPosition[     59052,       1618]
+NotebookOutlinePosition[     59445,       1634]
+CellTagsIndexPosition[     59402,       1631]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", " ", 
+   RowBox[{
+   "===", "===", "===", "===", "===", "===", "===", "===", "===", "===", "===",
+     "===", "===", "===", "=="}], "*)"}], "\[IndentingNewLine]", 
+  RowBox[{"(*", 
+   RowBox[{
+    RowBox[{"LDA", " ", "Exchange"}], "-", 
+    RowBox[{"Correlation", " ", "Derivation", " ", "Package"}]}], "*)"}], 
+  "\[IndentingNewLine]", 
+  RowBox[{"(*", " ", 
+   RowBox[{
+   "===", "===", "===", "===", "===", "===", "===", "===", "===", "===", "===",
+     "===", "===", "===", "=="}], "*)"}], "\[IndentingNewLine]", 
+  RowBox[{"(*", 
+   RowBox[{"Clear", " ", "all", " ", "symbols"}], "*)"}], 
+  "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{"ClearAll", "[", "\"\<Global`*\>\"", "]"}], "\n", 
+   "\[IndentingNewLine]", 
+   RowBox[{"(*", 
+    RowBox[{
+    "Set", " ", "all", " ", "symbols", " ", "to", " ", "be", " ", "real", " ",
+      "and", " ", "positive"}], "*)"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"$Assumptions", "=", 
+     RowBox[{
+      RowBox[{"\[Rho]", ">", "0"}], "&&", 
+      RowBox[{"rs", ">", "0"}]}]}], ";"}], "\[IndentingNewLine]", "\n", 
+   RowBox[{"(*", " ", 
+    RowBox[{
+    "===", "===", "===", "===", "===", "===", "===", "===", "===", "===", "===",
+      "===", "===", "===", "=="}], "*)"}], "\[IndentingNewLine]", 
+   RowBox[{"(*", 
+    RowBox[{"1.", " ", "SLATER", " ", "EXCHANGE", " ", "DERIVATION"}], "*)"}],
+    "\[IndentingNewLine]", 
+   RowBox[{"(*", " ", 
+    RowBox[{
+    "===", "===", "===", "===", "===", "===", "===", "===", "===", "===", "===",
+      "===", "===", "===", "=="}], "*)"}], "\[IndentingNewLine]", 
+   "\[IndentingNewLine]", 
+   RowBox[{"(*", 
+    RowBox[{
+     RowBox[{"Energy", " ", "per", " ", 
+      RowBox[{"particle", ":", "\[CurlyEpsilon]x"}]}], "=", 
+     RowBox[{"Cx", "*", 
+      RowBox[{"\[Rho]", "^", 
+       RowBox[{"(", 
+        RowBox[{"1", "/", "3"}], ")"}]}]}]}], "*)"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"slaterEnergy", "[", "\[Rho]_", "]"}], ":=", 
+    RowBox[{"Cx", "*", 
+     RowBox[{"\[Rho]", "^", 
+      RowBox[{"(", 
+       RowBox[{"1", "/", "3"}], ")"}]}]}]}], "\n", "\[IndentingNewLine]", 
+   RowBox[{"(*", 
+    RowBox[{
+     RowBox[{"Exchange", " ", 
+      RowBox[{"potential", ":", "vx"}]}], "=", 
+     RowBox[{"\[CurlyEpsilon]x", "+", 
+      RowBox[{"\[Rho]", "*", 
+       RowBox[{"d\[CurlyEpsilon]x", "/", "d\[Rho]"}]}]}]}], "*)"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"slaterPotential", "[", "\[Rho]_", "]"}], ":=", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"slaterEnergy", "[", "\[Rho]", "]"}], "+", 
+      RowBox[{"\[Rho]", "*", 
+       RowBox[{"D", "[", 
+        RowBox[{
+         RowBox[{"slaterEnergy", "[", "\[Rho]", "]"}], ",", "\[Rho]"}], 
+        "]"}]}]}], "//", "Simplify"}]}], "\[IndentingNewLine]", "\n", 
+   RowBox[{"(*", 
+    RowBox[{"Evaluate", " ", "with", " ", "constant"}], "*)"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"slaterConstants", "=", 
+     RowBox[{"{", 
+      RowBox[{"Cx", "->", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"-", "3"}], "/", "4"}], "*", 
+        RowBox[{
+         RowBox[{"(", 
+          RowBox[{"3", "/", "\[Pi]"}], ")"}], "^", 
+         RowBox[{"(", 
+          RowBox[{"1", "/", "3"}], ")"}]}]}]}], "}"}]}], ";"}], "\n", 
+   RowBox[{"Print", "[", "\"\<=== Slater Exchange ===\>\"", "]"}], "\n", 
+   RowBox[{"Print", "[", 
+    RowBox[{"\"\<Energy per particle: \[CurlyEpsilon]x = \>\"", ",", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"slaterEnergy", "[", "\[Rho]", "]"}], "/.", " ", 
+       "slaterConstants"}], "//", "TraditionalForm"}]}], "]"}], "\n", 
+   RowBox[{"Print", "[", 
+    RowBox[{"\"\<Potential: vx = \[CurlyEpsilon]x + \[Rho] \[PartialD]\
+\[CurlyEpsilon]x/\[PartialD]\[Rho] = \>\"", ",", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"slaterPotential", "[", "\[Rho]", "]"}], "/.", " ", 
+       "slaterConstants"}], "//", "TraditionalForm"}]}], "]"}], "\n", 
+   RowBox[{"Print", "[", 
+    RowBox[{"\"\<vx/\[CurlyEpsilon]x ratio: \>\"", ",", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"(", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"slaterPotential", "[", "\[Rho]", "]"}], "/", 
+          RowBox[{"slaterEnergy", "[", "\[Rho]", "]"}]}], "/.", " ", 
+         "slaterConstants"}], ")"}], "//", "Simplify"}], "//", 
+      "TraditionalForm"}]}], "]"}], "\n", 
+   RowBox[{"Print", "[", "]"}], "\[IndentingNewLine]", "\[IndentingNewLine]", 
+   
+   RowBox[{"(*", " ", 
+    RowBox[{
+    "===", "===", "===", "===", "===", "===", "===", "===", "===", "===", "===",
+      "===", "===", "===", "=="}], "*)"}], "\[IndentingNewLine]", 
+   RowBox[{"(*", 
+    RowBox[{"2.", " ", "VWN5", " ", "CORRELATION", " ", "DERIVATION"}], 
+    "*)"}], "\[IndentingNewLine]", 
+   RowBox[{"(*", " ", 
+    RowBox[{
+    "===", "===", "===", "===", "===", "===", "===", "===", "===", "===", "===",
+      "===", "===", "===", "=="}], "*)"}], "\[IndentingNewLine]", 
+   "\[IndentingNewLine]", 
+   RowBox[{"(*", 
+    RowBox[{"Define", " ", "x", " ", "parameter"}], "*)"}], "\n", 
+   RowBox[{
+    RowBox[{"x", "[", "rs_", "]"}], ":=", 
+    RowBox[{"Sqrt", "[", "rs", "]"}]}], "\[IndentingNewLine]", "\n", 
+   RowBox[{"(*", 
+    RowBox[{
+     RowBox[{"Define", " ", "X", 
+      RowBox[{"(", "x", ")"}]}], "=", 
+     RowBox[{
+      RowBox[{"x", "^", "2"}], "+", 
+      RowBox[{"b", " ", "x"}], "+", "c"}]}], "*)"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"X", "[", 
+     RowBox[{"rs_", ",", "b_", ",", "c_"}], "]"}], ":=", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"x", "[", "rs", "]"}], "^", "2"}], "+", 
+     RowBox[{"b", "*", 
+      RowBox[{"x", "[", "rs", "]"}]}], "+", "c"}]}], "\[IndentingNewLine]", 
+   "\n", 
+   RowBox[{"(*", 
+    RowBox[{
+    "VWN5", " ", "correlation", " ", "energy", " ", "per", " ", "particle"}], 
+    "*)"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"vwn5Energy", "[", 
+     RowBox[{"rs_", ",", "A_", ",", "b_", ",", "c_", ",", "x0_"}], "]"}], ":=", 
+    RowBox[{"Module", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{
+       "Q", ",", "Xx", ",", "Xx0", ",", "fQ", ",", "fx0", ",", "ftanx0"}], 
+       "}"}], ",", 
+      RowBox[{
+       RowBox[{"Q", "=", 
+        RowBox[{"Sqrt", "[", 
+         RowBox[{
+          RowBox[{"4", "*", "c"}], "-", 
+          RowBox[{"b", "^", "2"}]}], "]"}]}], ";", "\[IndentingNewLine]", 
+       RowBox[{"Xx", "=", 
+        RowBox[{"X", "[", 
+         RowBox[{"rs", ",", "b", ",", "c"}], "]"}]}], ";", 
+       "\[IndentingNewLine]", 
+       RowBox[{"Xx0", "=", 
+        RowBox[{"X", "[", 
+         RowBox[{
+          RowBox[{"x0", "^", "2"}], ",", "b", ",", "c"}], "]"}]}], ";", 
+       "\[IndentingNewLine]", 
+       RowBox[{"fQ", "=", 
+        RowBox[{"2", "*", 
+         RowBox[{"b", "/", "Q"}]}]}], ";", "\[IndentingNewLine]", 
+       RowBox[{"fx0", "=", 
+        RowBox[{"b", "*", 
+         RowBox[{"x0", "/", "Xx0"}]}]}], ";", "\[IndentingNewLine]", 
+       RowBox[{"ftanx0", "=", 
+        RowBox[{"2", "*", 
+         RowBox[{
+          RowBox[{"(", 
+           RowBox[{"b", "+", 
+            RowBox[{"2", "*", "x0"}]}], ")"}], "/", "Q"}]}]}], ";", 
+       "\[IndentingNewLine]", 
+       RowBox[{"A", "*", 
+        RowBox[{"(", 
+         RowBox[{
+          RowBox[{"Log", "[", 
+           RowBox[{
+            RowBox[{
+             RowBox[{"x", "[", "rs", "]"}], "^", "2"}], "/", "Xx"}], "]"}], "+", 
+          RowBox[{"fQ", "*", 
+           RowBox[{"ArcTan", "[", 
+            RowBox[{"Q", "/", 
+             RowBox[{"(", 
+              RowBox[{
+               RowBox[{"2", "*", 
+                RowBox[{"x", "[", "rs", "]"}]}], "+", "b"}], ")"}]}], "]"}]}],
+           "-", 
+          RowBox[{"fx0", "*", 
+           RowBox[{"(", 
+            RowBox[{
+             RowBox[{"Log", "[", 
+              RowBox[{
+               RowBox[{
+                RowBox[{"(", 
+                 RowBox[{
+                  RowBox[{"x", "[", "rs", "]"}], "-", "x0"}], ")"}], "^", 
+                "2"}], "/", "Xx"}], "]"}], "+", 
+             RowBox[{"ftanx0", "*", 
+              RowBox[{"ArcTan", "[", 
+               RowBox[{"Q", "/", 
+                RowBox[{"(", 
+                 RowBox[{
+                  RowBox[{"2", "*", 
+                   RowBox[{"x", "[", "rs", "]"}]}], "+", "b"}], ")"}]}], 
+               "]"}]}]}], ")"}]}]}], ")"}]}]}]}], "]"}]}], 
+   "\[IndentingNewLine]", "\n", 
+   RowBox[{"(*", 
+    RowBox[{"Print", " ", "VWN5", " ", "energy", " ", "expression"}], "*)"}], 
+   "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"vwnConstants", "=", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"A", "->", "0.0310907"}], ",", 
+       RowBox[{"b", "->", "3.72744"}], ",", 
+       RowBox[{"c", "->", "12.9352"}], ",", 
+       RowBox[{"x0", "->", 
+        RowBox[{"-", "0.10498"}]}]}], "}"}]}], ";"}], "\n", 
+   RowBox[{"Print", "[", "\"\<=== VWN5 Correlation ===\>\"", "]"}], "\n", 
+   RowBox[{"Print", "[", 
+    RowBox[{"\"\<Energy per particle: \[CurlyEpsilon]c = \>\"", ",", 
+     RowBox[{
+      RowBox[{"vwn5Energy", "[", 
+       RowBox[{"rs", ",", "A", ",", "b", ",", "c", ",", "x0"}], "]"}], "//", 
+      "TraditionalForm"}]}], "]"}], "\n", 
+   RowBox[{"Print", "[", "]"}], "\[IndentingNewLine]", "\n", 
+   RowBox[{"(*", 
+    RowBox[{
+     RowBox[{"Derive", " ", 
+      RowBox[{"potential", ":", "vc"}]}], "=", 
+     RowBox[{"\[CurlyEpsilon]c", "-", 
+      RowBox[{
+       RowBox[{"(", 
+        RowBox[{"rs", "/", "3"}], ")"}], "*", 
+       RowBox[{"d\[CurlyEpsilon]c", "/", "drs"}]}]}]}], "*)"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"vwn5Potential", "[", 
+     RowBox[{"rs_", ",", "A_", ",", "b_", ",", "c_", ",", "x0_"}], "]"}], ":=",
+     "\[IndentingNewLine]", 
+    RowBox[{"Module", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{"\[CurlyEpsilon]c", ",", "d\[CurlyEpsilon]cdrs"}], "}"}], ",", 
+      "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{"\[CurlyEpsilon]c", "=", 
+        RowBox[{"vwn5Energy", "[", 
+         RowBox[{"rs", ",", "A", ",", "b", ",", "c", ",", "x0"}], "]"}]}], ";",
+        "\[IndentingNewLine]", 
+       RowBox[{"d\[CurlyEpsilon]cdrs", "=", 
+        RowBox[{"D", "[", 
+         RowBox[{"\[CurlyEpsilon]c", ",", "rs"}], "]"}]}], ";", 
+       "\[IndentingNewLine]", 
+       RowBox[{
+        RowBox[{"\[CurlyEpsilon]c", "-", 
+         RowBox[{
+          RowBox[{"(", 
+           RowBox[{"rs", "/", "3"}], ")"}], "*", "d\[CurlyEpsilon]cdrs"}]}], "//",
+         "Simplify"}]}]}], "]"}]}], "\[IndentingNewLine]", 
+   "\[IndentingNewLine]", 
+   RowBox[{"(*", 
+    RowBox[{"Compute", " ", "symbolic", " ", "derivative"}], "*)"}], "\n", 
+   RowBox[{
+   "Print", "[", "\"\<Symbolic derivative d\[CurlyEpsilon]c/drs:\>\"", "]"}], 
+   "\n", 
+   RowBox[{
+    RowBox[{"vwnEnergySym", "=", 
+     RowBox[{"vwn5Energy", "[", 
+      RowBox[{"rs", ",", "A", ",", "b", ",", "c", ",", "x0"}], "]"}]}], ";"}],
+    "\n", 
+   RowBox[{
+    RowBox[{"vwnDerivativeSym", "=", 
+     RowBox[{
+      RowBox[{"D", "[", 
+       RowBox[{"vwnEnergySym", ",", "rs"}], "]"}], "//", "Simplify"}]}], 
+    ";"}], "\n", 
+   RowBox[{"Print", "[", 
+    RowBox[{"TraditionalForm", "[", "vwnDerivativeSym", "]"}], "]"}], "\n", 
+   RowBox[{"Print", "[", "]"}], "\[IndentingNewLine]", "\[IndentingNewLine]", 
+   
+   RowBox[{"(*", 
+    RowBox[{"Potential", " ", "expression"}], "*)"}], "\n", 
+   RowBox[{
+   "Print", "[", "\"\<Potential: vc = \[CurlyEpsilon]c - (rs/3) \[PartialD]\
+\[CurlyEpsilon]c/\[PartialD]rs = \>\"", "]"}], "\n", 
+   RowBox[{
+    RowBox[{"vwnPotentialSym", "=", 
+     RowBox[{
+      RowBox[{"vwn5Potential", "[", 
+       RowBox[{"rs", ",", "A", ",", "b", ",", "c", ",", "x0"}], "]"}], "//", 
+      "Simplify"}]}], ";"}], "\n", 
+   RowBox[{"Print", "[", 
+    RowBox[{"TraditionalForm", "[", "vwnPotentialSym", "]"}], "]"}], "\n", 
+   RowBox[{"Print", "[", "]"}], "\[IndentingNewLine]", "\[IndentingNewLine]", 
+   
+   RowBox[{"(*", 
+    RowBox[{
+     RowBox[{"Numerical", " ", "test", " ", "for", " ", "rs"}], "=", "1"}], 
+    "*)"}], "\n", 
+   RowBox[{"Print", "[", "\"\<Numerical test (rs = 1):\>\"", "]"}], "\n", 
+   RowBox[{
+    RowBox[{"testRS", "=", "1.0"}], ";"}], "\n", 
+   RowBox[{
+    RowBox[{"energyVWN", "=", 
+     RowBox[{
+      RowBox[{"vwn5Energy", "[", 
+       RowBox[{"testRS", ",", "A", ",", "b", ",", "c", ",", "x0"}], "]"}], "/.",
+       " ", "vwnConstants"}]}], ";"}], "\n", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"potentialVWN", "=", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"vwn5Potential", "[", 
+         RowBox[{"rs", ",", "A", ",", "b", ",", "c", ",", "x0"}], "]"}], "/.",
+         " ", "vwnConstants"}], " ", "/.", 
+       RowBox[{"rs", "->", "testRS"}]}]}], ";"}], ";"}], "\n", 
+   RowBox[{
+    RowBox[{"Print", "[", 
+     RowBox[{"\"\<\[CurlyEpsilon]c = \>\"", ",", "energyVWN"}], "]"}], ";"}], 
+   "\n", 
+   RowBox[{
+    RowBox[{"Print", "[", 
+     RowBox[{"\"\<vc = \>\"", ",", "potentialVWN"}], "]"}], ";"}], "\n", 
+   RowBox[{"Print", "[", "]"}], "\[IndentingNewLine]", "\[IndentingNewLine]", 
+   
+   RowBox[{"(*", " ", 
+    RowBox[{
+    "===", "===", "===", "===", "===", "===", "===", "===", "===", "===", "===",
+      "===", "===", "===", "=="}], "*)"}], "\[IndentingNewLine]", 
+   RowBox[{"(*", 
+    RowBox[{"3.", " ", "PW92", " ", "CORRELATION", " ", "DERIVATION"}], 
+    "*)"}], "\[IndentingNewLine]", 
+   RowBox[{"(*", " ", 
+    RowBox[{
+    "===", "===", "===", "===", "===", "===", "===", "===", "===", "===", "===",
+      "===", "===", "===", "=="}], "*)"}], "\[IndentingNewLine]", "\n", 
+   RowBox[{"(*", 
+    RowBox[{
+    "PW92", " ", "correlation", " ", "energy", " ", "per", " ", "particle"}], 
+    "*)"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"pw92Energy", "[", 
+     RowBox[{
+     "rs_", ",", "A_", ",", "a1_", ",", "b1_", ",", "b2_", ",", "b3_", ",", 
+      "b4_"}], "]"}], ":=", "\[IndentingNewLine]", 
+    RowBox[{"Module", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{"rs12", ",", "rs32", ",", "rs2", ",", "denom", ",", "Dpoly"}], 
+       "}"}], ",", "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{"rs12", "=", 
+        RowBox[{"Sqrt", "[", "rs", "]"}]}], ";", "\[IndentingNewLine]", 
+       RowBox[{"rs32", "=", 
+        RowBox[{"rs", "*", "rs12"}]}], ";", "\[IndentingNewLine]", 
+       RowBox[{"rs2", "=", 
+        RowBox[{"rs", "^", "2"}]}], ";", "\[IndentingNewLine]", 
+       RowBox[{"denom", "=", 
+        RowBox[{
+         RowBox[{"b1", "*", "rs12"}], "+", 
+         RowBox[{"b2", "*", "rs"}], "+", 
+         RowBox[{"b3", "*", "rs32"}], "+", 
+         RowBox[{"b4", "*", "rs2"}]}]}], ";", "\[IndentingNewLine]", 
+       RowBox[{"Dpoly", "=", 
+        RowBox[{"2", "*", "A", "*", "denom"}]}], ";", "\[IndentingNewLine]", 
+       RowBox[{
+        RowBox[{"-", "2"}], "*", "A", "*", 
+        RowBox[{"(", 
+         RowBox[{"1", "+", 
+          RowBox[{"a1", "*", "rs"}]}], ")"}], "*", 
+        RowBox[{"Log", "[", 
+         RowBox[{"1", "+", 
+          RowBox[{"1", "/", "Dpoly"}]}], "]"}]}]}]}], "]"}]}], 
+   "\[IndentingNewLine]", "\[IndentingNewLine]", 
+   RowBox[{"(*", 
+    RowBox[{"PW92", " ", "constants"}], "*)"}], "\n", 
+   RowBox[{
+    RowBox[{"pw92Constants", "=", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"A", "->", "0.031091"}], ",", 
+       RowBox[{"a1", "->", "0.21370"}], ",", 
+       RowBox[{"b1", "->", "7.5957"}], ",", 
+       RowBox[{"b2", "->", "3.5876"}], ",", 
+       RowBox[{"b3", "->", "1.6382"}], ",", 
+       RowBox[{"b4", "->", "0.49294"}]}], "}"}]}], ";"}], 
+   "\[IndentingNewLine]", "\n", 
+   RowBox[{"Print", "[", "\"\<=== PW92 Correlation ===\>\"", "]"}], "\n", 
+   RowBox[{"Print", "[", 
+    RowBox[{"\"\<Energy per particle: \[CurlyEpsilon]c = \>\"", ",", 
+     RowBox[{
+      RowBox[{"pw92Energy", "[", 
+       RowBox[{
+       "rs", ",", "A", ",", "a1", ",", "b1", ",", "b2", ",", "b3", ",", 
+        "b4"}], "]"}], "//", "TraditionalForm"}]}], "]"}], "\n", 
+   RowBox[{"Print", "[", "]"}], "\[IndentingNewLine]", "\[IndentingNewLine]", 
+   
+   RowBox[{"(*", 
+    RowBox[{
+     RowBox[{"Derive", " ", 
+      RowBox[{"potential", ":", "vc"}]}], "=", 
+     RowBox[{"\[CurlyEpsilon]c", "-", 
+      RowBox[{
+       RowBox[{"(", 
+        RowBox[{"rs", "/", "3"}], ")"}], "*", 
+       RowBox[{"d\[CurlyEpsilon]c", "/", "drs"}]}]}]}], "*)"}], "\n", 
+   RowBox[{
+    RowBox[{"pw92Potential", "[", 
+     RowBox[{
+     "rs_", ",", "A_", ",", "a1_", ",", "b1_", ",", "b2_", ",", "b3_", ",", 
+      "b4_"}], "]"}], ":=", 
+    RowBox[{"Module", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{"\[CurlyEpsilon]c", ",", "d\[CurlyEpsilon]cdrs"}], "}"}], ",", 
+      
+      RowBox[{
+       RowBox[{"\[CurlyEpsilon]c", "=", 
+        RowBox[{"pw92Energy", "[", 
+         RowBox[{
+         "rs", ",", "A", ",", "a1", ",", "b1", ",", "b2", ",", "b3", ",", 
+          "b4"}], "]"}]}], ";", "\[IndentingNewLine]", 
+       RowBox[{"d\[CurlyEpsilon]cdrs", "=", 
+        RowBox[{"D", "[", 
+         RowBox[{"\[CurlyEpsilon]c", ",", "rs"}], "]"}]}], ";", 
+       "\[IndentingNewLine]", 
+       RowBox[{
+        RowBox[{"\[CurlyEpsilon]c", "-", 
+         RowBox[{
+          RowBox[{"(", 
+           RowBox[{"rs", "/", "3"}], ")"}], "*", "d\[CurlyEpsilon]cdrs"}]}], "//",
+         "Simplify"}]}]}], "]"}]}], "\n", "\[IndentingNewLine]", 
+   RowBox[{"(*", 
+    RowBox[{"Compute", " ", "symbolic", " ", "derivative"}], "*)"}], "\[IndentingNewLine]", 
+   RowBox[{
+   "Print", "[", "\"\<Symbolic derivative d\[CurlyEpsilon]c/drs:\>\"", "]"}], 
+   "\n", 
+   RowBox[{
+    RowBox[{"pwEnergySym", "=", 
+     RowBox[{"pw92Energy", "[", 
+      RowBox[{
+      "rs", ",", "A", ",", "a1", ",", "b1", ",", "b2", ",", "b3", ",", "b4"}],
+       "]"}]}], ";"}], "\n", 
+   RowBox[{
+    RowBox[{"pwDerivativeSym", "=", 
+     RowBox[{
+      RowBox[{"D", "[", 
+       RowBox[{"pwEnergySym", ",", "rs"}], "]"}], "//", "Simplify"}]}], ";"}],
+    "\n", 
+   RowBox[{"Print", "[", 
+    RowBox[{"TraditionalForm", "[", "pwDerivativeSym", "]"}], "]"}], "\n", 
+   RowBox[{"Print", "[", "]"}], "\n", "\[IndentingNewLine]", 
+   RowBox[{"(*", 
+    RowBox[{"Potential", " ", "expression"}], "*)"}], "\[IndentingNewLine]", 
+   RowBox[{
+   "Print", "[", "\"\<Potential: vc = \[CurlyEpsilon]c - (rs/3) \[PartialD]\
+\[CurlyEpsilon]c/\[PartialD]rs = \>\"", "]"}], "\n", 
+   RowBox[{
+    RowBox[{"pwPotentialSym", "=", 
+     RowBox[{
+      RowBox[{"pw92Potential", "[", 
+       RowBox[{
+       "rs", ",", "A", ",", "a1", ",", "b1", ",", "b2", ",", "b3", ",", 
+        "b4"}], "]"}], "//", "Simplify"}]}], ";"}], "\n", 
+   RowBox[{"Print", "[", 
+    RowBox[{"TraditionalForm", "[", "pwPotentialSym", "]"}], "]"}], "\n", 
+   RowBox[{"Print", "[", "]"}], "\n", "\[IndentingNewLine]", 
+   RowBox[{"(*", 
+    RowBox[{
+     RowBox[{"Numerical", " ", "test", " ", "for", " ", "rs"}], "=", "1"}], 
+    "*)"}], "\[IndentingNewLine]", 
+   RowBox[{"Print", "[", "\"\<Numerical test (rs = 1):\>\"", "]"}], "\n", 
+   RowBox[{
+    RowBox[{"energyPW", "=", 
+     RowBox[{
+      RowBox[{"pw92Energy", "[", 
+       RowBox[{
+       "testRS", ",", "A", ",", "a1", ",", "b1", ",", "b2", ",", "b3", ",", 
+        "b4"}], "]"}], "/.", " ", "pw92Constants"}]}], ";"}], "\n", 
+   RowBox[{
+    RowBox[{"potentialPW", "=", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"pw92Potential", "[", 
+        RowBox[{
+        "rs", ",", "A", ",", "a1", ",", "b1", ",", "b2", ",", "b3", ",", 
+         "b4"}], "]"}], "/.", " ", "pw92Constants"}], " ", "/.", 
+      RowBox[{"rs", "->", "testRS"}]}]}], ";"}], "\n", 
+   RowBox[{
+    RowBox[{"Print", "[", 
+     RowBox[{"\"\<\[CurlyEpsilon]c = \>\"", ",", "energyPW"}], "]"}], ";"}], "\n", 
+   RowBox[{
+    RowBox[{"Print", "[", 
+     RowBox[{"\"\<vc = \>\"", ",", "potentialPW"}], "]"}], ";"}], "\n", 
+   RowBox[{"Print", "[", "]"}], "\[IndentingNewLine]", "\[IndentingNewLine]", 
+   
+   RowBox[{"(*", " ", 
+    RowBox[{
+    "===", "===", "===", "===", "===", "===", "===", "===", "===", "===", "===",
+      "===", "===", "===", "=="}], "*)"}], "\[IndentingNewLine]", 
+   RowBox[{"(*", 
+    RowBox[{
+     RowBox[{"4.", " ", "VERIFICATION", " ", "OF", " ", "vx"}], "=", 
+     RowBox[{
+      RowBox[{"(", 
+       RowBox[{"4", "/", "3"}], ")"}], " ", "\[CurlyEpsilon]x", " ", 
+      "RELATION"}]}], "*)"}], "\[IndentingNewLine]", 
+   RowBox[{"(*", " ", 
+    RowBox[{
+    "===", "===", "===", "===", "===", "===", "===", "===", "===", "===", "===",
+      "===", "===", "===", "=="}], "*)"}], "\[IndentingNewLine]", "\n", 
+   RowBox[{
+   "Print", "[", "\"\<=== Verification of Exchange Relations ===\>\"", "]"}], 
+   "\n", 
+   RowBox[{"Print", "[", "\"\<For Slater exchange:\>\"", "]"}], "\n", 
+   RowBox[{"Print", "[", 
+    RowBox[{"\"\<\[PartialD](\[Rho] \[CurlyEpsilon]x)/\[PartialD]\[Rho] = \
+\>\"", ",", 
+     RowBox[{
+      RowBox[{
+       RowBox[{
+        RowBox[{"D", "[", 
+         RowBox[{
+          RowBox[{"\[Rho]", "*", 
+           RowBox[{"slaterEnergy", "[", "\[Rho]", "]"}]}], ",", "\[Rho]"}], 
+         "]"}], "/.", " ", "slaterConstants"}], "//", "Simplify"}], "//", 
+      "TraditionalForm"}]}], "]"}], "\n", 
+   RowBox[{"Print", "[", 
+    RowBox[{"\"\<(4/3) \[CurlyEpsilon]x = \>\"", ",", 
+     RowBox[{
+      RowBox[{
+       RowBox[{
+        RowBox[{"(", 
+         RowBox[{"4", "/", "3"}], ")"}], "*", 
+        RowBox[{"slaterEnergy", "[", "\[Rho]", "]"}]}], "/.", " ", 
+       "slaterConstants"}], "//", "TraditionalForm"}]}], "]"}], "\n", 
+   RowBox[{"Print", "[", 
+    RowBox[{"\"\<Are they equal? \>\"", ",", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"D", "[", 
+        RowBox[{
+         RowBox[{"\[Rho]", "*", 
+          RowBox[{"slaterEnergy", "[", "\[Rho]", "]"}]}], ",", "\[Rho]"}], 
+        "]"}], "===", 
+       RowBox[{
+        RowBox[{"(", 
+         RowBox[{"4", "/", "3"}], ")"}], "*", 
+        RowBox[{"slaterEnergy", "[", "\[Rho]", "]"}]}]}], "/.", " ", 
+      "slaterConstants"}]}], "]"}], "\n", 
+   RowBox[{"Print", "[", "]"}], "\[IndentingNewLine]", "\[IndentingNewLine]", 
+   
+   RowBox[{"(*", " ", 
+    RowBox[{
+    "===", "===", "===", "===", "===", "===", "===", "===", "===", "===", "===",
+      "===", "===", "===", "=="}], "*)"}], "\[IndentingNewLine]", 
+   RowBox[{"(*", 
+    RowBox[{
+     RowBox[{"5.", " ", "LOW"}], "-", 
+     RowBox[{"DENSITY", " ", "LIMIT", " ", "ANALYSIS"}]}], "*)"}], 
+   "\[IndentingNewLine]", 
+   RowBox[{"(*", " ", 
+    RowBox[{
+    "===", "===", "===", "===", "===", "===", "===", "===", "===", "===", "===",
+      "===", "===", "===", "=="}], "*)"}], "\[IndentingNewLine]", "\n", 
+   RowBox[{
+   "Print", "[", "\"\<=== Low-density limit (rs \[RightArrow] \[Infinity]) \
+===\>\"", "]"}], "\n", 
+   RowBox[{"Print", "[", 
+    RowBox[{"\"\<VWN5 energy behavior: Limit[\[CurlyEpsilon]c, \
+rs->\[Infinity]] = \>\"", ",", 
+     RowBox[{"Limit", "[", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"vwn5Energy", "[", 
+         RowBox[{"rs", ",", "A", ",", "b", ",", "c", ",", "x0"}], "]"}], "/.",
+         " ", "vwnConstants"}], ",", 
+       RowBox[{"rs", "->", "Infinity"}]}], "]"}]}], "]"}], "\n", 
+   RowBox[{"Print", "[", 
+    RowBox[{"\"\<PW92 energy behavior: Limit[\[CurlyEpsilon]c, \
+rs->\[Infinity]] = \>\"", ",", 
+     RowBox[{"Limit", "[", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"pw92Energy", "[", 
+         RowBox[{
+         "rs", ",", "A", ",", "a1", ",", "b1", ",", "b2", ",", "b3", ",", 
+          "b4"}], "]"}], "/.", " ", "pw92Constants"}], ",", 
+       RowBox[{"rs", "->", "Infinity"}]}], "]"}]}], "]"}], "\n", 
+   RowBox[{"Print", "[", "]"}], "\[IndentingNewLine]", "\[IndentingNewLine]", 
+   
+   RowBox[{"(*", " ", 
+    RowBox[{
+    "===", "===", "===", "===", "===", "===", "===", "===", "===", "===", "===",
+      "===", "===", "===", "=="}], "*)"}], "\[IndentingNewLine]", 
+   RowBox[{"(*", 
+    RowBox[{
+     RowBox[{"6.", " ", "HIGH"}], "-", 
+     RowBox[{"DENSITY", " ", "LIMIT", " ", "ANALYSIS"}]}], "*)"}], 
+   "\[IndentingNewLine]", 
+   RowBox[{"(*", " ", 
+    RowBox[{
+    "===", "===", "===", "===", "===", "===", "===", "===", "===", "===", "===",
+      "===", "===", "===", "=="}], "*)"}], "\[IndentingNewLine]", "\n", 
+   RowBox[{
+   "Print", "[", "\"\<=== High-density limit (rs \[RightArrow] 0) ===\>\"", 
+    "]"}], "\n", 
+   RowBox[{
+   "Print", "[", "\"\<VWN5 energy series expansion: Series[\[CurlyEpsilon]c, \
+{rs,0,2}] = \>\"", "]"}], "\n", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"Series", "[", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"vwn5Energy", "[", 
+         RowBox[{"rs", ",", "A", ",", "b", ",", "c", ",", "x0"}], "]"}], "/.",
+         " ", "vwnConstants"}], ",", 
+       RowBox[{"{", 
+        RowBox[{"rs", ",", "0", ",", "2"}], "}"}]}], "]"}], "//", "Normal"}], 
+    "//", "Print"}], "\n", 
+   RowBox[{
+   "Print", "[", "\"\<PW92 energy series expansion: Series[\[CurlyEpsilon]c, \
+{rs,0,2}] = \>\"", "]"}], "\n", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"Series", "[", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"pw92Energy", "[", 
+         RowBox[{
+         "rs", ",", "A", ",", "a1", ",", "b1", ",", "b2", ",", "b3", ",", 
+          "b4"}], "]"}], "/.", " ", "pw92Constants"}], ",", 
+       RowBox[{"{", 
+        RowBox[{"rs", ",", "0", ",", "2"}], "}"}]}], "]"}], "//", "Normal"}], 
+    "//", "Print"}]}]}]], "Input",
+ CellChangeTimes->{{3.972947776302278*^9, 3.972947809035019*^9}, {
+   3.972947845914624*^9, 3.972947902820526*^9}, 3.972947963926605*^9, {
+   3.972948147105156*^9, 3.9729481766452*^9}},
+ CellLabel->
+  "In[474]:=",ExpressionUUID->"46585a80-1a3d-4e66-b705-450f92244e19"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData["\<\"=== Slater Exchange ===\"\>"], "Print",
+ CellChangeTimes->{3.97294781448559*^9, 3.972947857833815*^9, 
+  3.9729479154595823`*^9, 3.972947981645363*^9, 3.972948179397109*^9},
+ CellLabel->
+  "During evaluation of \
+In[474]:=",ExpressionUUID->"7cbdee9f-cc4a-4b46-9904-9d6fae93b9dd"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Energy per particle: \[CurlyEpsilon]x = \"\>", "\[InvisibleSpace]", 
+   TagBox[
+    FormBox[
+     RowBox[{
+      RowBox[{"-", 
+       FractionBox["3", "4"]}], " ", 
+      RadicalBox[
+       FractionBox["3", "\[Pi]"], "3"], " ", 
+      RadicalBox["\[Rho]", "3"]}],
+     TraditionalForm],
+    TraditionalForm,
+    Editable->True]}],
+  SequenceForm["Energy per particle: \[CurlyEpsilon]x = ", 
+   TraditionalForm[
+   Rational[-3, 4] (3/Pi)^Rational[1, 3] $CellContext`\[Rho]^Rational[1, 3]]],
+  
+  Editable->False]], "Print",
+ CellChangeTimes->{3.97294781448559*^9, 3.972947857833815*^9, 
+  3.9729479154595823`*^9, 3.972947981645363*^9, 3.972948179397605*^9},
+ CellLabel->
+  "During evaluation of \
+In[474]:=",ExpressionUUID->"a4e62816-0cd4-4f37-9ed4-b7e66380fa55"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Potential: vx = \[CurlyEpsilon]x + \[Rho] \[PartialD]\
+\[CurlyEpsilon]x/\[PartialD]\[Rho] = \"\>", "\[InvisibleSpace]", 
+   TagBox[
+    FormBox[
+     RowBox[{
+      RowBox[{"-", 
+       RadicalBox[
+        FractionBox["3", "\[Pi]"], "3"]}], " ", 
+      RadicalBox["\[Rho]", "3"]}],
+     TraditionalForm],
+    TraditionalForm,
+    Editable->True]}],
+  SequenceForm[
+  "Potential: vx = \[CurlyEpsilon]x + \[Rho] \[PartialD]\[CurlyEpsilon]x/\
+\[PartialD]\[Rho] = ", 
+   TraditionalForm[-(3/Pi)^Rational[1, 3] $CellContext`\[Rho]^Rational[1, 3]]],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.97294781448559*^9, 3.972947857833815*^9, 
+  3.9729479154595823`*^9, 3.972947981645363*^9, 3.972948179398181*^9},
+ CellLabel->
+  "During evaluation of \
+In[474]:=",ExpressionUUID->"af4bfba7-2d0d-4fbe-9f4d-b799b288d211"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"vx/\[CurlyEpsilon]x ratio: \"\>", "\[InvisibleSpace]", 
+   TagBox[
+    FormBox[
+     FractionBox["4", "3"],
+     TraditionalForm],
+    TraditionalForm,
+    Editable->True]}],
+  SequenceForm["vx/\[CurlyEpsilon]x ratio: ", 
+   TraditionalForm[
+    Rational[4, 3]]],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.97294781448559*^9, 3.972947857833815*^9, 
+  3.9729479154595823`*^9, 3.972947981645363*^9, 3.972948179398486*^9},
+ CellLabel->
+  "During evaluation of \
+In[474]:=",ExpressionUUID->"ce91cb58-d45c-41e7-a11c-d5c6c583f83d"],
+
+Cell[BoxData["\<\"\"\>"], "Print",
+ CellChangeTimes->{3.97294781448559*^9, 3.972947857833815*^9, 
+  3.9729479154595823`*^9, 3.972947981645363*^9, 3.972948179398748*^9},
+ CellLabel->
+  "During evaluation of \
+In[474]:=",ExpressionUUID->"bcd7315b-1821-43a7-b003-647e0eb360c4"],
+
+Cell[BoxData["\<\"=== VWN5 Correlation ===\"\>"], "Print",
+ CellChangeTimes->{3.97294781448559*^9, 3.972947857833815*^9, 
+  3.9729479154595823`*^9, 3.972947981645363*^9, 3.972948179398986*^9},
+ CellLabel->
+  "During evaluation of \
+In[474]:=",ExpressionUUID->"521e1f0e-cd52-40b1-8401-5067667e7b07"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Energy per particle: \[CurlyEpsilon]c = \"\>", "\[InvisibleSpace]", 
+   TagBox[
+    FormBox[
+     RowBox[{"A", " ", 
+      RowBox[{"(", 
+       RowBox[{
+        RowBox[{"-", 
+         FractionBox[
+          RowBox[{"b", " ", "x0", " ", 
+           RowBox[{"(", 
+            RowBox[{
+             FractionBox[
+              RowBox[{"2", " ", 
+               RowBox[{"(", 
+                RowBox[{"b", "+", 
+                 RowBox[{"2", " ", "x0"}]}], ")"}], " ", 
+               RowBox[{
+                SuperscriptBox["tan", 
+                 RowBox[{"-", "1"}]], "(", 
+                FractionBox[
+                 SqrtBox[
+                  RowBox[{
+                   RowBox[{"4", " ", "c"}], "-", 
+                   SuperscriptBox["b", "2"]}]], 
+                 RowBox[{"b", "+", 
+                  RowBox[{"2", " ", 
+                   SqrtBox["rs"]}]}]], ")"}]}], 
+              SqrtBox[
+               RowBox[{
+                RowBox[{"4", " ", "c"}], "-", 
+                SuperscriptBox["b", "2"]}]]], "+", 
+             RowBox[{"log", "(", 
+              FractionBox[
+               SuperscriptBox[
+                RowBox[{"(", 
+                 RowBox[{
+                  SqrtBox["rs"], "-", "x0"}], ")"}], "2"], 
+               RowBox[{
+                RowBox[{"b", " ", 
+                 SqrtBox["rs"]}], "+", "c", "+", "rs"}]], ")"}]}], ")"}]}], 
+          RowBox[{
+           RowBox[{"b", " ", 
+            SqrtBox[
+             SuperscriptBox["x0", "2"]]}], "+", "c", "+", 
+           SuperscriptBox["x0", "2"]}]]}], "+", 
+        FractionBox[
+         RowBox[{"2", " ", "b", " ", 
+          RowBox[{
+           SuperscriptBox["tan", 
+            RowBox[{"-", "1"}]], "(", 
+           FractionBox[
+            SqrtBox[
+             RowBox[{
+              RowBox[{"4", " ", "c"}], "-", 
+              SuperscriptBox["b", "2"]}]], 
+            RowBox[{"b", "+", 
+             RowBox[{"2", " ", 
+              SqrtBox["rs"]}]}]], ")"}]}], 
+         SqrtBox[
+          RowBox[{
+           RowBox[{"4", " ", "c"}], "-", 
+           SuperscriptBox["b", "2"]}]]], "+", 
+        RowBox[{"log", "(", 
+         FractionBox["rs", 
+          RowBox[{
+           RowBox[{"b", " ", 
+            SqrtBox["rs"]}], "+", "c", "+", "rs"}]], ")"}]}], ")"}]}],
+     TraditionalForm],
+    TraditionalForm,
+    Editable->True]}],
+  SequenceForm["Energy per particle: \[CurlyEpsilon]c = ", 
+   TraditionalForm[$CellContext`A (
+     2 $CellContext`b (-$CellContext`b^2 + 4 $CellContext`c)^Rational[-1, 2] 
+      ArcTan[(-$CellContext`b^2 + 4 $CellContext`c)^
+         Rational[1, 2]/($CellContext`b + 2 $CellContext`rs^Rational[1, 2])] + 
+     Log[$CellContext`rs/($CellContext`c + $CellContext`b $CellContext`rs^
+         Rational[
+          1, 2] + $CellContext`rs)] - $CellContext`b $CellContext`x0 \
+($CellContext`c + $CellContext`x0^2 + $CellContext`b ($CellContext`x0^2)^
+         Rational[1, 2])^(-1) (
+      2 (-$CellContext`b^2 + 4 $CellContext`c)^
+        Rational[-1, 2] ($CellContext`b + 2 $CellContext`x0) 
+       ArcTan[(-$CellContext`b^2 + 4 $CellContext`c)^
+          Rational[1, 2]/($CellContext`b + 2 $CellContext`rs^Rational[1, 2])] + 
+      Log[($CellContext`c + $CellContext`b $CellContext`rs^
+            Rational[1, 2] + $CellContext`rs)^(-1) ($CellContext`rs^
+           Rational[1, 2] - $CellContext`x0)^2]))]],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.97294781448559*^9, 3.972947857833815*^9, 
+  3.9729479154595823`*^9, 3.972947981645363*^9, 3.9729481794101257`*^9},
+ CellLabel->
+  "During evaluation of \
+In[474]:=",ExpressionUUID->"2eeb7ae1-0bad-4d94-aa25-aabbea58a408"],
+
+Cell[BoxData["\<\"\"\>"], "Print",
+ CellChangeTimes->{3.97294781448559*^9, 3.972947857833815*^9, 
+  3.9729479154595823`*^9, 3.972947981645363*^9, 3.9729481794107323`*^9},
+ CellLabel->
+  "During evaluation of \
+In[474]:=",ExpressionUUID->"1b9ba40c-11a8-4a9f-b342-2c7d6248efdb"],
+
+Cell[BoxData["\<\"Symbolic derivative d\[CurlyEpsilon]c/drs:\"\>"], "Print",
+ CellChangeTimes->{3.97294781448559*^9, 3.972947857833815*^9, 
+  3.9729479154595823`*^9, 3.972947981645363*^9, 3.972948179410961*^9},
+ CellLabel->
+  "During evaluation of \
+In[474]:=",ExpressionUUID->"e8046e76-de37-4ae9-b9c5-207340fe45d1"],
+
+Cell[BoxData[
+ TagBox[
+  FormBox[
+   FractionBox[
+    RowBox[{"A", " ", 
+     RowBox[{"(", 
+      RowBox[{
+       RowBox[{"b", " ", "c", " ", 
+        RowBox[{"(", 
+         RowBox[{
+          SqrtBox[
+           RowBox[{"rs", " ", 
+            SuperscriptBox["x0", "2"]}]], "-", 
+          RowBox[{
+           SqrtBox["rs"], " ", "x0"}], "-", 
+          RowBox[{
+           SqrtBox[
+            SuperscriptBox["x0", "2"]], " ", "x0"}]}], ")"}]}], "-", 
+       RowBox[{"b", " ", 
+        SqrtBox["rs"], " ", 
+        SuperscriptBox["x0", "2"], " ", 
+        RowBox[{"(", 
+         RowBox[{"b", "+", "x0"}], ")"}]}], "+", 
+       RowBox[{
+        SuperscriptBox["c", "2"], " ", 
+        RowBox[{"(", 
+         RowBox[{
+          SqrtBox["rs"], "-", "x0"}], ")"}]}], "+", 
+       RowBox[{"c", " ", 
+        SuperscriptBox["x0", "2"], " ", 
+        RowBox[{"(", 
+         RowBox[{
+          SqrtBox["rs"], "-", "x0"}], ")"}]}]}], ")"}]}], 
+    RowBox[{"rs", " ", 
+     RowBox[{"(", 
+      RowBox[{
+       SqrtBox["rs"], "-", "x0"}], ")"}], " ", 
+     RowBox[{"(", 
+      RowBox[{
+       RowBox[{"b", " ", 
+        SqrtBox["rs"]}], "+", "c", "+", "rs"}], ")"}], " ", 
+     RowBox[{"(", 
+      RowBox[{
+       RowBox[{"b", " ", 
+        SqrtBox[
+         SuperscriptBox["x0", "2"]]}], "+", "c", "+", 
+       SuperscriptBox["x0", "2"]}], ")"}]}]],
+   TraditionalForm],
+  TraditionalForm,
+  Editable->True]], "Print",
+ CellChangeTimes->{3.97294781448559*^9, 3.972947857833815*^9, 
+  3.9729479154595823`*^9, 3.972947981645363*^9, 3.972948179411263*^9},
+ CellLabel->
+  "During evaluation of \
+In[474]:=",ExpressionUUID->"f9d3f7fe-d33a-4208-8cf0-f35326c39b0f"],
+
+Cell[BoxData["\<\"\"\>"], "Print",
+ CellChangeTimes->{3.97294781448559*^9, 3.972947857833815*^9, 
+  3.9729479154595823`*^9, 3.972947981645363*^9, 3.9729481794115477`*^9},
+ CellLabel->
+  "During evaluation of \
+In[474]:=",ExpressionUUID->"8dcf8dfc-d9a9-472e-a8e0-e6a0df23bdda"],
+
+Cell[BoxData["\<\"Potential: vc = \[CurlyEpsilon]c - (rs/3) \[PartialD]\
+\[CurlyEpsilon]c/\[PartialD]rs = \"\>"], "Print",
+ CellChangeTimes->{3.97294781448559*^9, 3.972947857833815*^9, 
+  3.9729479154595823`*^9, 3.972947981645363*^9, 3.972948179411768*^9},
+ CellLabel->
+  "During evaluation of \
+In[474]:=",ExpressionUUID->"1b59487f-d2ba-4ec4-b37e-f8294fbe6695"],
+
+Cell[BoxData[
+ TagBox[
+  FormBox[
+   RowBox[{
+    FractionBox["1", "3"], " ", "A", " ", 
+    RowBox[{"(", 
+     RowBox[{
+      RowBox[{"-", 
+       FractionBox[
+        RowBox[{"3", " ", "b", " ", "x0", " ", 
+         RowBox[{"(", 
+          RowBox[{
+           FractionBox[
+            RowBox[{"2", " ", 
+             RowBox[{"(", 
+              RowBox[{"b", "+", 
+               RowBox[{"2", " ", "x0"}]}], ")"}], " ", 
+             RowBox[{
+              SuperscriptBox["tan", 
+               RowBox[{"-", "1"}]], "(", 
+              FractionBox[
+               SqrtBox[
+                RowBox[{
+                 RowBox[{"4", " ", "c"}], "-", 
+                 SuperscriptBox["b", "2"]}]], 
+               RowBox[{"b", "+", 
+                RowBox[{"2", " ", 
+                 SqrtBox["rs"]}]}]], ")"}]}], 
+            SqrtBox[
+             RowBox[{
+              RowBox[{"4", " ", "c"}], "-", 
+              SuperscriptBox["b", "2"]}]]], "+", 
+           RowBox[{"log", "(", 
+            FractionBox[
+             SuperscriptBox[
+              RowBox[{"(", 
+               RowBox[{
+                SqrtBox["rs"], "-", "x0"}], ")"}], "2"], 
+             RowBox[{
+              RowBox[{"b", " ", 
+               SqrtBox["rs"]}], "+", "c", "+", "rs"}]], ")"}]}], ")"}]}], 
+        RowBox[{
+         RowBox[{"b", " ", 
+          SqrtBox[
+           SuperscriptBox["x0", "2"]]}], "+", "c", "+", 
+         SuperscriptBox["x0", "2"]}]]}], "+", 
+      FractionBox[
+       RowBox[{"6", " ", "b", " ", 
+        RowBox[{
+         SuperscriptBox["tan", 
+          RowBox[{"-", "1"}]], "(", 
+         FractionBox[
+          SqrtBox[
+           RowBox[{
+            RowBox[{"4", " ", "c"}], "-", 
+            SuperscriptBox["b", "2"]}]], 
+          RowBox[{"b", "+", 
+           RowBox[{"2", " ", 
+            SqrtBox["rs"]}]}]], ")"}]}], 
+       SqrtBox[
+        RowBox[{
+         RowBox[{"4", " ", "c"}], "-", 
+         SuperscriptBox["b", "2"]}]]], "+", 
+      FractionBox[
+       RowBox[{"b", " ", 
+        SqrtBox["rs"], " ", "x0", " ", 
+        RowBox[{"(", 
+         RowBox[{
+          RowBox[{"x0", " ", 
+           RowBox[{"(", 
+            RowBox[{"b", "+", "x0"}], ")"}]}], "+", "c"}], ")"}]}], 
+       RowBox[{
+        RowBox[{"(", 
+         RowBox[{
+          SqrtBox["rs"], "-", "x0"}], ")"}], " ", 
+        RowBox[{"(", 
+         RowBox[{
+          RowBox[{"b", " ", 
+           SqrtBox["rs"]}], "+", "c", "+", "rs"}], ")"}], " ", 
+        RowBox[{"(", 
+         RowBox[{
+          RowBox[{"b", " ", 
+           SqrtBox[
+            SuperscriptBox["x0", "2"]]}], "+", "c", "+", 
+          SuperscriptBox["x0", "2"]}], ")"}]}]], "+", 
+      FractionBox[
+       RowBox[{"b", " ", 
+        SqrtBox["rs"]}], 
+       RowBox[{"2", " ", 
+        RowBox[{"(", 
+         RowBox[{
+          RowBox[{"b", " ", 
+           SqrtBox["rs"]}], "+", "c", "+", "rs"}], ")"}]}]], "-", 
+      FractionBox[
+       RowBox[{
+        RowBox[{"b", " ", 
+         SqrtBox["rs"]}], "+", 
+        RowBox[{"2", " ", "c"}]}], 
+       RowBox[{"2", " ", 
+        RowBox[{"(", 
+         RowBox[{
+          RowBox[{"b", " ", 
+           SqrtBox["rs"]}], "+", "c", "+", "rs"}], ")"}]}]], "+", 
+      RowBox[{"3", " ", 
+       RowBox[{"log", "(", 
+        FractionBox["rs", 
+         RowBox[{
+          RowBox[{"b", " ", 
+           SqrtBox["rs"]}], "+", "c", "+", "rs"}]], ")"}]}]}], ")"}]}],
+   TraditionalForm],
+  TraditionalForm,
+  Editable->True]], "Print",
+ CellChangeTimes->{3.97294781448559*^9, 3.972947857833815*^9, 
+  3.9729479154595823`*^9, 3.972947981645363*^9, 3.972948179421768*^9},
+ CellLabel->
+  "During evaluation of \
+In[474]:=",ExpressionUUID->"662353a4-31c7-4100-9eb5-e91799b34272"],
+
+Cell[BoxData["\<\"\"\>"], "Print",
+ CellChangeTimes->{3.97294781448559*^9, 3.972947857833815*^9, 
+  3.9729479154595823`*^9, 3.972947981645363*^9, 3.9729481794222507`*^9},
+ CellLabel->
+  "During evaluation of \
+In[474]:=",ExpressionUUID->"4625836d-23de-401f-9681-56126a112081"],
+
+Cell[BoxData["\<\"Numerical test (rs = 1):\"\>"], "Print",
+ CellChangeTimes->{3.97294781448559*^9, 3.972947857833815*^9, 
+  3.9729479154595823`*^9, 3.972947981645363*^9, 3.972948179422471*^9},
+ CellLabel->
+  "During evaluation of \
+In[474]:=",ExpressionUUID->"185c1d3f-15a9-4475-a0c9-7e8d0bb95179"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"\[CurlyEpsilon]c = \"\>", "\[InvisibleSpace]", 
+   RowBox[{"-", "0.05992015829796165`"}]}],
+  SequenceForm["\[CurlyEpsilon]c = ", -0.05992015829796165],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.97294781448559*^9, 3.972947857833815*^9, 
+  3.9729479154595823`*^9, 3.972947981645363*^9, 3.972948179422711*^9},
+ CellLabel->
+  "During evaluation of \
+In[474]:=",ExpressionUUID->"f228442a-5653-4eb7-939a-6ef72f18887f"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"vc = \"\>", "\[InvisibleSpace]", 
+   RowBox[{"-", "0.06770548985949401`"}]}],
+  SequenceForm["vc = ", -0.06770548985949401],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.97294781448559*^9, 3.972947857833815*^9, 
+  3.9729479154595823`*^9, 3.972947981645363*^9, 3.972948179422929*^9},
+ CellLabel->
+  "During evaluation of \
+In[474]:=",ExpressionUUID->"f4e334f4-214a-41bd-947d-88ca7d0e70d5"],
+
+Cell[BoxData["\<\"\"\>"], "Print",
+ CellChangeTimes->{3.97294781448559*^9, 3.972947857833815*^9, 
+  3.9729479154595823`*^9, 3.972947981645363*^9, 3.972948179423131*^9},
+ CellLabel->
+  "During evaluation of \
+In[474]:=",ExpressionUUID->"55c2bc92-6f5e-4f57-bd6c-542ad356dabe"],
+
+Cell[BoxData["\<\"=== PW92 Correlation ===\"\>"], "Print",
+ CellChangeTimes->{3.97294781448559*^9, 3.972947857833815*^9, 
+  3.9729479154595823`*^9, 3.972947981645363*^9, 3.972948179423324*^9},
+ CellLabel->
+  "During evaluation of \
+In[474]:=",ExpressionUUID->"a7adfe1e-52bf-49cb-a6f1-1a02afd6c4af"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Energy per particle: \[CurlyEpsilon]c = \"\>", "\[InvisibleSpace]", 
+   TagBox[
+    FormBox[
+     RowBox[{
+      RowBox[{"-", "2"}], " ", "A", " ", 
+      RowBox[{"(", 
+       RowBox[{
+        RowBox[{"a1", " ", "rs"}], "+", "1"}], ")"}], " ", 
+      RowBox[{"log", "(", 
+       RowBox[{
+        FractionBox["1", 
+         RowBox[{"2", " ", "A", " ", 
+          RowBox[{"(", 
+           RowBox[{
+            RowBox[{"b1", " ", 
+             SqrtBox["rs"]}], "+", 
+            RowBox[{"b2", " ", "rs"}], "+", 
+            RowBox[{"b3", " ", 
+             SuperscriptBox["rs", 
+              RowBox[{"3", "/", "2"}]]}], "+", 
+            RowBox[{"b4", " ", 
+             SuperscriptBox["rs", "2"]}]}], ")"}]}]], "+", "1"}], ")"}]}],
+     TraditionalForm],
+    TraditionalForm,
+    Editable->True]}],
+  SequenceForm["Energy per particle: \[CurlyEpsilon]c = ", 
+   TraditionalForm[(-2) $CellContext`A (1 + $CellContext`a1 $CellContext`rs) 
+    Log[1 + Rational[
+        1, 2] $CellContext`A^(-1)/($CellContext`b1 $CellContext`rs^
+         Rational[
+          1, 2] + $CellContext`b2 $CellContext`rs + $CellContext`b3 \
+$CellContext`rs^Rational[3, 2] + $CellContext`b4 $CellContext`rs^2)]]],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.97294781448559*^9, 3.972947857833815*^9, 
+  3.9729479154595823`*^9, 3.972947981645363*^9, 3.9729481794235907`*^9},
+ CellLabel->
+  "During evaluation of \
+In[474]:=",ExpressionUUID->"26fd3d85-8ab7-4cee-8309-1f1ed6ded529"],
+
+Cell[BoxData["\<\"\"\>"], "Print",
+ CellChangeTimes->{3.97294781448559*^9, 3.972947857833815*^9, 
+  3.9729479154595823`*^9, 3.972947981645363*^9, 3.9729481794238377`*^9},
+ CellLabel->
+  "During evaluation of \
+In[474]:=",ExpressionUUID->"8dcbe2ba-14ab-4aac-9481-955b001d02b1"],
+
+Cell[BoxData["\<\"Symbolic derivative d\[CurlyEpsilon]c/drs:\"\>"], "Print",
+ CellChangeTimes->{3.97294781448559*^9, 3.972947857833815*^9, 
+  3.9729479154595823`*^9, 3.972947981645363*^9, 3.972948179424033*^9},
+ CellLabel->
+  "During evaluation of \
+In[474]:=",ExpressionUUID->"601d7cb6-f373-4930-a691-9a060e743369"],
+
+Cell[BoxData[
+ TagBox[
+  FormBox[
+   RowBox[{
+    FractionBox[
+     RowBox[{"A", " ", 
+      RowBox[{"(", 
+       RowBox[{
+        RowBox[{"a1", " ", "rs"}], "+", "1"}], ")"}], " ", 
+      RowBox[{"(", 
+       RowBox[{"b1", "+", 
+        RowBox[{"2", " ", "b2", " ", 
+         SqrtBox["rs"]}], "+", 
+        RowBox[{"3", " ", "b3", " ", "rs"}], "+", 
+        RowBox[{"4", " ", "b4", " ", 
+         SuperscriptBox["rs", 
+          RowBox[{"3", "/", "2"}]]}]}], ")"}]}], 
+     RowBox[{"rs", " ", 
+      RowBox[{"(", 
+       RowBox[{"b1", "+", 
+        RowBox[{"b2", " ", 
+         SqrtBox["rs"]}], "+", 
+        RowBox[{"b3", " ", "rs"}], "+", 
+        RowBox[{"b4", " ", 
+         SuperscriptBox["rs", 
+          RowBox[{"3", "/", "2"}]]}]}], ")"}], " ", 
+      RowBox[{"(", 
+       RowBox[{
+        RowBox[{"2", " ", "A", " ", 
+         RowBox[{"(", 
+          RowBox[{
+           RowBox[{"b1", " ", 
+            SqrtBox["rs"]}], "+", 
+           RowBox[{"rs", " ", 
+            RowBox[{"(", 
+             RowBox[{"b2", "+", 
+              RowBox[{"b3", " ", 
+               SqrtBox["rs"]}], "+", 
+              RowBox[{"b4", " ", "rs"}]}], ")"}]}]}], ")"}]}], "+", "1"}], 
+       ")"}]}]], "-", 
+    RowBox[{"2", " ", "A", " ", "a1", " ", 
+     RowBox[{"log", "(", 
+      RowBox[{
+       FractionBox["1", 
+        RowBox[{"2", " ", "A", " ", 
+         RowBox[{"(", 
+          RowBox[{
+           RowBox[{"b1", " ", 
+            SqrtBox["rs"]}], "+", 
+           RowBox[{"rs", " ", 
+            RowBox[{"(", 
+             RowBox[{"b2", "+", 
+              RowBox[{"b3", " ", 
+               SqrtBox["rs"]}], "+", 
+              RowBox[{"b4", " ", "rs"}]}], ")"}]}]}], ")"}]}]], "+", "1"}], 
+      ")"}]}]}],
+   TraditionalForm],
+  TraditionalForm,
+  Editable->True]], "Print",
+ CellChangeTimes->{3.97294781448559*^9, 3.972947857833815*^9, 
+  3.9729479154595823`*^9, 3.972947981645363*^9, 3.9729481794266233`*^9},
+ CellLabel->
+  "During evaluation of \
+In[474]:=",ExpressionUUID->"402cdedf-7ddf-4ca9-89e8-d21e9573c102"],
+
+Cell[BoxData["\<\"\"\>"], "Print",
+ CellChangeTimes->{3.97294781448559*^9, 3.972947857833815*^9, 
+  3.9729479154595823`*^9, 3.972947981645363*^9, 3.972948179427094*^9},
+ CellLabel->
+  "During evaluation of \
+In[474]:=",ExpressionUUID->"b4bc0852-2cd0-4ec7-97e7-63ebd0b575e2"],
+
+Cell[BoxData["\<\"Potential: vc = \[CurlyEpsilon]c - (rs/3) \[PartialD]\
+\[CurlyEpsilon]c/\[PartialD]rs = \"\>"], "Print",
+ CellChangeTimes->{3.97294781448559*^9, 3.972947857833815*^9, 
+  3.9729479154595823`*^9, 3.972947981645363*^9, 3.9729481794273167`*^9},
+ CellLabel->
+  "During evaluation of \
+In[474]:=",ExpressionUUID->"eac2fb02-0344-479a-b2cc-24bcd7d26098"],
+
+Cell[BoxData[
+ TagBox[
+  FormBox[
+   RowBox[{
+    FractionBox["1", "3"], " ", "A", " ", 
+    RowBox[{"(", 
+     RowBox[{
+      RowBox[{"-", 
+       FractionBox[
+        RowBox[{
+         RowBox[{"(", 
+          RowBox[{
+           RowBox[{"a1", " ", "rs"}], "+", "1"}], ")"}], " ", 
+         RowBox[{"(", 
+          RowBox[{"b1", "+", 
+           RowBox[{"2", " ", "b2", " ", 
+            SqrtBox["rs"]}], "+", 
+           RowBox[{"3", " ", "b3", " ", "rs"}], "+", 
+           RowBox[{"4", " ", "b4", " ", 
+            SuperscriptBox["rs", 
+             RowBox[{"3", "/", "2"}]]}]}], ")"}]}], 
+        RowBox[{
+         RowBox[{"(", 
+          RowBox[{"b1", "+", 
+           RowBox[{"b2", " ", 
+            SqrtBox["rs"]}], "+", 
+           RowBox[{"b3", " ", "rs"}], "+", 
+           RowBox[{"b4", " ", 
+            SuperscriptBox["rs", 
+             RowBox[{"3", "/", "2"}]]}]}], ")"}], " ", 
+         RowBox[{"(", 
+          RowBox[{
+           RowBox[{"2", " ", "A", " ", 
+            RowBox[{"(", 
+             RowBox[{
+              RowBox[{"b1", " ", 
+               SqrtBox["rs"]}], "+", 
+              RowBox[{"rs", " ", 
+               RowBox[{"(", 
+                RowBox[{"b2", "+", 
+                 RowBox[{"b3", " ", 
+                  SqrtBox["rs"]}], "+", 
+                 RowBox[{"b4", " ", "rs"}]}], ")"}]}]}], ")"}]}], "+", "1"}], 
+          ")"}]}]]}], "+", 
+      RowBox[{"2", " ", "a1", " ", "rs", " ", 
+       RowBox[{"log", "(", 
+        RowBox[{
+         FractionBox["1", 
+          RowBox[{"2", " ", "A", " ", 
+           RowBox[{"(", 
+            RowBox[{
+             RowBox[{"b1", " ", 
+              SqrtBox["rs"]}], "+", 
+             RowBox[{"rs", " ", 
+              RowBox[{"(", 
+               RowBox[{"b2", "+", 
+                RowBox[{"b3", " ", 
+                 SqrtBox["rs"]}], "+", 
+                RowBox[{"b4", " ", "rs"}]}], ")"}]}]}], ")"}]}]], "+", "1"}], 
+        ")"}]}], "-", 
+      RowBox[{"6", " ", 
+       RowBox[{"(", 
+        RowBox[{
+         RowBox[{"a1", " ", "rs"}], "+", "1"}], ")"}], " ", 
+       RowBox[{"log", "(", 
+        RowBox[{
+         FractionBox["1", 
+          RowBox[{"2", " ", "A", " ", 
+           RowBox[{"(", 
+            RowBox[{
+             RowBox[{"b1", " ", 
+              SqrtBox["rs"]}], "+", 
+             RowBox[{"rs", " ", 
+              RowBox[{"(", 
+               RowBox[{"b2", "+", 
+                RowBox[{"b3", " ", 
+                 SqrtBox["rs"]}], "+", 
+                RowBox[{"b4", " ", "rs"}]}], ")"}]}]}], ")"}]}]], "+", "1"}], 
+        ")"}]}]}], ")"}]}],
+   TraditionalForm],
+  TraditionalForm,
+  Editable->True]], "Print",
+ CellChangeTimes->{3.97294781448559*^9, 3.972947857833815*^9, 
+  3.9729479154595823`*^9, 3.972947981645363*^9, 3.972948179436225*^9},
+ CellLabel->
+  "During evaluation of \
+In[474]:=",ExpressionUUID->"bc862675-8c77-4084-9006-f1dd9ddc0710"],
+
+Cell[BoxData["\<\"\"\>"], "Print",
+ CellChangeTimes->{3.97294781448559*^9, 3.972947857833815*^9, 
+  3.9729479154595823`*^9, 3.972947981645363*^9, 3.97294817943684*^9},
+ CellLabel->
+  "During evaluation of \
+In[474]:=",ExpressionUUID->"c906e51b-7c15-4532-a636-6689f40e0f4a"],
+
+Cell[BoxData["\<\"Numerical test (rs = 1):\"\>"], "Print",
+ CellChangeTimes->{3.97294781448559*^9, 3.972947857833815*^9, 
+  3.9729479154595823`*^9, 3.972947981645363*^9, 3.972948179437068*^9},
+ CellLabel->
+  "During evaluation of \
+In[474]:=",ExpressionUUID->"e717d7f7-4844-4b69-a810-ed5a6e04f16b"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"\[CurlyEpsilon]c = \"\>", "\[InvisibleSpace]", 
+   RowBox[{"-", "0.059773864184404085`"}]}],
+  SequenceForm["\[CurlyEpsilon]c = ", -0.059773864184404085`],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.97294781448559*^9, 3.972947857833815*^9, 
+  3.9729479154595823`*^9, 3.972947981645363*^9, 3.972948179437313*^9},
+ CellLabel->
+  "During evaluation of \
+In[474]:=",ExpressionUUID->"cc7397f4-a644-423c-80dd-6213edc8a26e"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"vc = \"\>", "\[InvisibleSpace]", 
+   RowBox[{"-", "0.06745872611876227`"}]}],
+  SequenceForm["vc = ", -0.06745872611876227],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.97294781448559*^9, 3.972947857833815*^9, 
+  3.9729479154595823`*^9, 3.972947981645363*^9, 3.9729481794375553`*^9},
+ CellLabel->
+  "During evaluation of \
+In[474]:=",ExpressionUUID->"666ed422-9e94-4d74-b1e9-5f3e5c7c9b8e"],
+
+Cell[BoxData["\<\"\"\>"], "Print",
+ CellChangeTimes->{3.97294781448559*^9, 3.972947857833815*^9, 
+  3.9729479154595823`*^9, 3.972947981645363*^9, 3.9729481794377623`*^9},
+ CellLabel->
+  "During evaluation of \
+In[474]:=",ExpressionUUID->"e4d3f49b-caed-443b-8a6a-164941028cf7"],
+
+Cell[BoxData["\<\"=== Verification of Exchange Relations ===\"\>"], "Print",
+ CellChangeTimes->{3.97294781448559*^9, 3.972947857833815*^9, 
+  3.9729479154595823`*^9, 3.972947981645363*^9, 3.9729481794379587`*^9},
+ CellLabel->
+  "During evaluation of \
+In[474]:=",ExpressionUUID->"c8dfe810-596e-496b-84d8-f8da371d15e2"],
+
+Cell[BoxData["\<\"For Slater exchange:\"\>"], "Print",
+ CellChangeTimes->{3.97294781448559*^9, 3.972947857833815*^9, 
+  3.9729479154595823`*^9, 3.972947981645363*^9, 3.9729481794381733`*^9},
+ CellLabel->
+  "During evaluation of \
+In[474]:=",ExpressionUUID->"a758364c-b4ea-445d-8f5f-5b71d353395d"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"\[PartialD](\[Rho] \[CurlyEpsilon]x)/\[PartialD]\[Rho] = \"\>",
+    "\[InvisibleSpace]", 
+   TagBox[
+    FormBox[
+     RowBox[{
+      RowBox[{"-", 
+       RadicalBox[
+        FractionBox["3", "\[Pi]"], "3"]}], " ", 
+      RadicalBox["\[Rho]", "3"]}],
+     TraditionalForm],
+    TraditionalForm,
+    Editable->True]}],
+  SequenceForm["\[PartialD](\[Rho] \[CurlyEpsilon]x)/\[PartialD]\[Rho] = ", 
+   TraditionalForm[-(3/Pi)^Rational[1, 3] $CellContext`\[Rho]^Rational[1, 3]]],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.97294781448559*^9, 3.972947857833815*^9, 
+  3.9729479154595823`*^9, 3.972947981645363*^9, 3.972948179438431*^9},
+ CellLabel->
+  "During evaluation of \
+In[474]:=",ExpressionUUID->"936f618c-d644-4a2c-82e5-3a11a14dcb9d"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"(4/3) \[CurlyEpsilon]x = \"\>", "\[InvisibleSpace]", 
+   TagBox[
+    FormBox[
+     RowBox[{
+      RowBox[{"-", 
+       RadicalBox[
+        FractionBox["3", "\[Pi]"], "3"]}], " ", 
+      RadicalBox["\[Rho]", "3"]}],
+     TraditionalForm],
+    TraditionalForm,
+    Editable->True]}],
+  SequenceForm["(4/3) \[CurlyEpsilon]x = ", 
+   TraditionalForm[-(3/Pi)^Rational[1, 3] $CellContext`\[Rho]^Rational[1, 3]]],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.97294781448559*^9, 3.972947857833815*^9, 
+  3.9729479154595823`*^9, 3.972947981645363*^9, 3.972948179438698*^9},
+ CellLabel->
+  "During evaluation of \
+In[474]:=",ExpressionUUID->"bcdf7784-26b9-4bba-9dea-5ef98f5d9fe2"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Are they equal? \"\>", "\[InvisibleSpace]", "True"}],
+  SequenceForm["Are they equal? ", True],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.97294781448559*^9, 3.972947857833815*^9, 
+  3.9729479154595823`*^9, 3.972947981645363*^9, 3.972948179438982*^9},
+ CellLabel->
+  "During evaluation of \
+In[474]:=",ExpressionUUID->"6659a938-8ad3-4c6f-b4a5-e499717200f1"],
+
+Cell[BoxData["\<\"\"\>"], "Print",
+ CellChangeTimes->{3.97294781448559*^9, 3.972947857833815*^9, 
+  3.9729479154595823`*^9, 3.972947981645363*^9, 3.972948179439248*^9},
+ CellLabel->
+  "During evaluation of \
+In[474]:=",ExpressionUUID->"6606eadb-4e4a-4cb4-824b-a96b1577e2b0"],
+
+Cell[BoxData["\<\"=== Low-density limit (rs \[RightArrow] \[Infinity]) \
+===\"\>"], "Print",
+ CellChangeTimes->{3.97294781448559*^9, 3.972947857833815*^9, 
+  3.9729479154595823`*^9, 3.972947981645363*^9, 3.9729481794394627`*^9},
+ CellLabel->
+  "During evaluation of \
+In[474]:=",ExpressionUUID->"59152df8-78b3-423c-ba62-e109b8897a84"]
+}, Open  ]],
+
+Cell[BoxData[
+ TemplateBox[{
+  "Limit", "alimv", 
+   "\"Warning: Assumptions that involve the limit variable are ignored.\"", 2,
+    536, 43, 20178738993964083564, "Local"},
+  "MessageTemplate",
+  BaseStyle->"MSG"]], "Message",
+ CellChangeTimes->{3.972947814682768*^9, 3.972947857867237*^9, 
+  3.972947915480221*^9, 3.972947981672031*^9, 3.9729481794468307`*^9},
+ CellLabel->
+  "During evaluation of \
+In[474]:=",ExpressionUUID->"85dea878-453b-415e-a30c-fe09ac8574bb"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"VWN5 energy behavior: Limit[\[CurlyEpsilon]c, rs->\[Infinity]] \
+= \"\>", "\[InvisibleSpace]", "0.`"}],
+  SequenceForm[
+  "VWN5 energy behavior: Limit[\[CurlyEpsilon]c, rs->\[Infinity]] = ", 0.],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.97294781448559*^9, 3.972947857833815*^9, 
+  3.9729479154595823`*^9, 3.972947981645363*^9, 3.972948179449952*^9},
+ CellLabel->
+  "During evaluation of \
+In[474]:=",ExpressionUUID->"12c75d23-b215-41d7-9b2c-71572e8ea525"],
+
+Cell[BoxData[
+ TemplateBox[{
+  "Limit", "alimv", 
+   "\"Warning: Assumptions that involve the limit variable are ignored.\"", 2,
+    537, 44, 20178738993964083564, "Local"},
+  "MessageTemplate",
+  BaseStyle->"MSG"]], "Message",
+ CellChangeTimes->{3.972947814682768*^9, 3.972947857867237*^9, 
+  3.972947915480221*^9, 3.972947981672031*^9, 3.972948179450211*^9},
+ CellLabel->
+  "During evaluation of \
+In[474]:=",ExpressionUUID->"9c0a121d-2171-4ee7-b5b8-7fe2950fe8df"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"PW92 energy behavior: Limit[\[CurlyEpsilon]c, rs->\[Infinity]] \
+= \"\>", "\[InvisibleSpace]", "0.`"}],
+  SequenceForm[
+  "PW92 energy behavior: Limit[\[CurlyEpsilon]c, rs->\[Infinity]] = ", 0.],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.97294781448559*^9, 3.972947857833815*^9, 
+  3.9729479154595823`*^9, 3.972947981645363*^9, 3.97294817945123*^9},
+ CellLabel->
+  "During evaluation of \
+In[474]:=",ExpressionUUID->"72add576-e138-4386-b922-f23c55e56ba2"],
+
+Cell[BoxData["\<\"\"\>"], "Print",
+ CellChangeTimes->{3.97294781448559*^9, 3.972947857833815*^9, 
+  3.9729479154595823`*^9, 3.972947981645363*^9, 3.9729481794514427`*^9},
+ CellLabel->
+  "During evaluation of \
+In[474]:=",ExpressionUUID->"79ca4738-4ee6-4532-9510-9a5b140eadcd"],
+
+Cell[BoxData["\<\"=== High-density limit (rs \[RightArrow] 0) ===\"\>"], \
+"Print",
+ CellChangeTimes->{3.97294781448559*^9, 3.972947857833815*^9, 
+  3.9729479154595823`*^9, 3.972947981645363*^9, 3.972948179452057*^9},
+ CellLabel->
+  "During evaluation of \
+In[474]:=",ExpressionUUID->"74745b4c-d96e-4a86-9e53-338ff0cf2771"],
+
+Cell[BoxData["\<\"VWN5 energy series expansion: Series[\[CurlyEpsilon]c, \
+{rs,0,2}] = \"\>"], "Print",
+ CellChangeTimes->{3.97294781448559*^9, 3.972947857833815*^9, 
+  3.9729479154595823`*^9, 3.972947981645363*^9, 3.972948179452258*^9},
+ CellLabel->
+  "During evaluation of \
+In[474]:=",ExpressionUUID->"e9a4189a-6c2a-46b3-80ef-d7e66f3fecb0"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{"-", "0.0010514046863668335`"}], " ", 
+   SqrtBox["rs"]}], "-", 
+  RowBox[{"0.08258617319913039`", " ", "rs"}], "+", 
+  RowBox[{"0.5260474602500493`", " ", 
+   SuperscriptBox["rs", 
+    RowBox[{"3", "/", "2"}]]}], "-", 
+  RowBox[{"3.755155666101071`", " ", 
+   SuperscriptBox["rs", "2"]}], "+", 
+  RowBox[{"0.0310907`", " ", 
+   RowBox[{"(", 
+    RowBox[{
+     RowBox[{"-", "1.4895351038101061`"}], "+", 
+     RowBox[{"1.`", " ", 
+      RowBox[{"Log", "[", "rs", "]"}]}]}], ")"}]}]}]], "Print",
+ CellChangeTimes->{3.97294781448559*^9, 3.972947857833815*^9, 
+  3.9729479154595823`*^9, 3.972947981645363*^9, 3.9729481794524918`*^9},
+ CellLabel->
+  "During evaluation of \
+In[474]:=",ExpressionUUID->"d98b9127-2406-44d6-9c9a-ca4f61456e53"],
+
+Cell[BoxData["\<\"PW92 energy series expansion: Series[\[CurlyEpsilon]c, \
+{rs,0,2}] = \"\>"], "Print",
+ CellChangeTimes->{3.97294781448559*^9, 3.972947857833815*^9, 
+  3.9729479154595823`*^9, 3.972947981645363*^9, 3.972948179452743*^9},
+ CellLabel->
+  "During evaluation of \
+In[474]:=",ExpressionUUID->"5945b22b-f865-4ecb-8a1f-5d8594801ccf"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"2.5169948389510714`*^-7", " ", 
+   SqrtBox["rs"]}], "-", 
+  RowBox[{"0.0020811566640325007`", " ", 
+   SuperscriptBox["rs", 
+    RowBox[{"3", "/", "2"}]]}], "-", 
+  RowBox[{"0.0009204131342334204`", " ", 
+   SuperscriptBox["rs", "2"]}], "+", 
+  RowBox[{"0.0004384545874281062`", " ", 
+   SuperscriptBox["rs", 
+    RowBox[{"5", "/", "2"}]]}], "+", 
+  RowBox[{"0.0066441467`", " ", "rs", " ", 
+   RowBox[{"(", 
+    RowBox[{
+     RowBox[{"-", "1.569577454937576`"}], "+", 
+     RowBox[{"1.`", " ", 
+      RowBox[{"Log", "[", "rs", "]"}]}]}], ")"}]}], "+", 
+  RowBox[{"0.031091`", " ", 
+   RowBox[{"(", 
+    RowBox[{
+     RowBox[{"-", "1.5002148249725706`"}], "+", 
+     RowBox[{"1.`", " ", 
+      RowBox[{"Log", "[", "rs", "]"}]}]}], ")"}]}]}]], "Print",
+ CellChangeTimes->{3.97294781448559*^9, 3.972947857833815*^9, 
+  3.9729479154595823`*^9, 3.972947981645363*^9, 3.972948179452997*^9},
+ CellLabel->
+  "During evaluation of \
+In[474]:=",ExpressionUUID->"c67dbd4d-5cfa-4c98-89c0-902a650a17e1"]
+}, Open  ]]
+}, Open  ]]
+},
+WindowSize->{1151, 765},
+WindowMargins->{{4, Automatic}, {Automatic, 4}},
+FrontEndVersion->"14.2 for Mac OS X ARM (64-bit) (March 16, 2025)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"3f9f05ab-d024-4139-889c-32a54888651c"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[576, 22, 25266, 657, 3215, "Input",ExpressionUUID->"46585a80-1a3d-4e66-b705-450f92244e19"],
+Cell[CellGroupData[{
+Cell[25867, 683, 297, 5, 23, "Print",ExpressionUUID->"7cbdee9f-cc4a-4b46-9904-9d6fae93b9dd"],
+Cell[26167, 690, 811, 23, 43, "Print",ExpressionUUID->"a4e62816-0cd4-4f37-9ed4-b7e66380fa55"],
+Cell[26981, 715, 862, 23, 43, "Print",ExpressionUUID->"af4bfba7-2d0d-4fbe-9f4d-b799b288d211"],
+Cell[27846, 740, 582, 17, 35, "Print",ExpressionUUID->"ce91cb58-d45c-41e7-a11c-d5c6c583f83d"],
+Cell[28431, 759, 274, 5, 23, "Print",ExpressionUUID->"bcd7315b-1821-43a7-b003-647e0eb360c4"],
+Cell[28708, 766, 298, 5, 23, "Print",ExpressionUUID->"521e1f0e-cd52-40b1-8401-5067667e7b07"],
+Cell[29009, 773, 3651, 94, 121, "Print",ExpressionUUID->"2eeb7ae1-0bad-4d94-aa25-aabbea58a408"],
+Cell[32663, 869, 276, 5, 23, "Print",ExpressionUUID->"1b9ba40c-11a8-4a9f-b342-2c7d6248efdb"],
+Cell[32942, 876, 316, 5, 23, "Print",ExpressionUUID->"e8046e76-de37-4ae9-b9c5-207340fe45d1"],
+Cell[33261, 883, 1650, 54, 55, "Print",ExpressionUUID->"f9d3f7fe-d33a-4208-8cf0-f35326c39b0f"],
+Cell[34914, 939, 276, 5, 23, "Print",ExpressionUUID->"8dcf8dfc-d9a9-472e-a8e0-e6a0df23bdda"],
+Cell[35193, 946, 362, 6, 23, "Print",ExpressionUUID->"1b59487f-d2ba-4ec4-b37e-f8294fbe6695"],
+Cell[35558, 954, 3671, 116, 261, "Print",ExpressionUUID->"662353a4-31c7-4100-9eb5-e91799b34272"],
+Cell[39232, 1072, 276, 5, 23, "Print",ExpressionUUID->"4625836d-23de-401f-9681-56126a112081"],
+Cell[39511, 1079, 298, 5, 23, "Print",ExpressionUUID->"185c1d3f-15a9-4475-a0c9-7e8d0bb95179"],
+Cell[39812, 1086, 471, 10, 23, "Print",ExpressionUUID->"f228442a-5653-4eb7-939a-6ef72f18887f"],
+Cell[40286, 1098, 443, 10, 23, "Print",ExpressionUUID->"f4e334f4-214a-41bd-947d-88ca7d0e70d5"],
+Cell[40732, 1110, 274, 5, 23, "Print",ExpressionUUID->"55c2bc92-6f5e-4f57-bd6c-542ad356dabe"],
+Cell[41009, 1117, 298, 5, 23, "Print",ExpressionUUID->"a7adfe1e-52bf-49cb-a6f1-1a02afd6c4af"],
+Cell[41310, 1124, 1507, 39, 46, "Print",ExpressionUUID->"26fd3d85-8ab7-4cee-8309-1f1ed6ded529"],
+Cell[42820, 1165, 276, 5, 23, "Print",ExpressionUUID->"8dcbe2ba-14ab-4aac-9481-955b001d02b1"],
+Cell[43099, 1172, 316, 5, 23, "Print",ExpressionUUID->"601d7cb6-f373-4930-a691-9a060e743369"],
+Cell[43418, 1179, 2018, 63, 48, "Print",ExpressionUUID->"402cdedf-7ddf-4ca9-89e8-d21e9573c102"],
+Cell[45439, 1244, 274, 5, 23, "Print",ExpressionUUID->"b4bc0852-2cd0-4ec7-97e7-63ebd0b575e2"],
+Cell[45716, 1251, 364, 6, 23, "Print",ExpressionUUID->"eac2fb02-0344-479a-b2cc-24bcd7d26098"],
+Cell[46083, 1259, 2867, 86, 97, "Print",ExpressionUUID->"bc862675-8c77-4084-9006-f1dd9ddc0710"],
+Cell[48953, 1347, 273, 5, 23, "Print",ExpressionUUID->"c906e51b-7c15-4532-a636-6689f40e0f4a"],
+Cell[49229, 1354, 298, 5, 23, "Print",ExpressionUUID->"e717d7f7-4844-4b69-a810-ed5a6e04f16b"],
+Cell[49530, 1361, 474, 10, 23, "Print",ExpressionUUID->"cc7397f4-a644-423c-80dd-6213edc8a26e"],
+Cell[50007, 1373, 445, 10, 23, "Print",ExpressionUUID->"666ed422-9e94-4d74-b1e9-5f3e5c7c9b8e"],
+Cell[50455, 1385, 276, 5, 23, "Print",ExpressionUUID->"e4d3f49b-caed-443b-8a6a-164941028cf7"],
+Cell[50734, 1392, 318, 5, 23, "Print",ExpressionUUID->"c8dfe810-596e-496b-84d8-f8da371d15e2"],
+Cell[51055, 1399, 296, 5, 23, "Print",ExpressionUUID->"a758364c-b4ea-445d-8f5f-5b71d353395d"],
+Cell[51354, 1406, 793, 21, 43, "Print",ExpressionUUID->"936f618c-d644-4a2c-82e5-3a11a14dcb9d"],
+Cell[52150, 1429, 725, 20, 43, "Print",ExpressionUUID->"bcdf7784-26b9-4bba-9dea-5ef98f5d9fe2"],
+Cell[52878, 1451, 414, 9, 23, "Print",ExpressionUUID->"6659a938-8ad3-4c6f-b4a5-e499717200f1"],
+Cell[53295, 1462, 274, 5, 23, "Print",ExpressionUUID->"6606eadb-4e4a-4cb4-824b-a96b1577e2b0"],
+Cell[53572, 1469, 334, 6, 23, "Print",ExpressionUUID->"59152df8-78b3-423c-ba62-e109b8897a84"]
+}, Open  ]],
+Cell[53921, 1478, 468, 11, 26, "Message",ExpressionUUID->"85dea878-453b-415e-a30c-fe09ac8574bb"],
+Cell[54392, 1491, 514, 11, 23, "Print",ExpressionUUID->"12c75d23-b215-41d7-9b2c-71572e8ea525"],
+Cell[54909, 1504, 466, 11, 26, "Message",ExpressionUUID->"9c0a121d-2171-4ee7-b5b8-7fe2950fe8df"],
+Cell[CellGroupData[{
+Cell[55400, 1519, 513, 11, 23, "Print",ExpressionUUID->"72add576-e138-4386-b922-f23c55e56ba2"],
+Cell[55916, 1532, 276, 5, 23, "Print",ExpressionUUID->"79ca4738-4ee6-4532-9510-9a5b140eadcd"],
+Cell[56195, 1539, 323, 6, 23, "Print",ExpressionUUID->"74745b4c-d96e-4a86-9e53-338ff0cf2771"],
+Cell[56521, 1547, 343, 6, 23, "Print",ExpressionUUID->"e9a4189a-6c2a-46b3-80ef-d7e66f3fecb0"],
+Cell[56867, 1555, 782, 21, 23, "Print",ExpressionUUID->"d98b9127-2406-44d6-9c9a-ca4f61456e53"],
+Cell[57652, 1578, 343, 6, 23, "Print",ExpressionUUID->"5945b22b-f865-4ecb-8a1f-5d8594801ccf"],
+Cell[57998, 1586, 1026, 28, 23, "Print",ExpressionUUID->"c67dbd4d-5cfa-4c98-89c0-902a650a17e1"]
+}, Open  ]]
+}, Open  ]]
+}
+]
+*)
+
