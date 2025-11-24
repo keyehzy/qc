@@ -45,7 +45,7 @@ int main() {
   auto orbitals = convert(molecule, BS_STO_3G);
 
   int n_electrons = 6 * 6 + 6;
-  auto integrals = HartreeFock::InputIntegrals(molecule, orbitals);
+  auto integrals = InputIntegrals(molecule, orbitals);
   auto result = HartreeFock::run_scf(integrals, n_electrons);
   return 0;
 }
