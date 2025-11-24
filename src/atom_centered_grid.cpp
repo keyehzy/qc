@@ -129,9 +129,7 @@ void apply_becke_weights(std::vector<GridPoint>& grid_points, const std::vector<
 }
 
 XC_Grid build_xc_grid(const std::vector<Atom>& atoms, const std::vector<ContractedGaussianTypeOrbital>& orbitals) {
-
     XC_Grid xc;
-    
     const int n_rad = 40; 
     const double r_scale = 1.5;  // Bragg radius
     

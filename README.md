@@ -22,3 +22,4 @@
 - https://vergil.chemistry.gatech.edu/static/content/DFT-intro.pdf
 - https://github.com/pwborthwick/kspy-gga
 - https://people.sc.fsu.edu/~jburkardt/datasets/sphere_lebedev_rule/sphere_lebedev_rule.html
+- https://www.chem.uci.edu/~kieron/dft/pubs/PBE97.pdf
