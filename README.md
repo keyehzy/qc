@@ -18,3 +18,5 @@
 - J. Chem. Phys. 65, 111 (1976); doi:10.1063/1.432807
 - https://pycrawfordprogproj.readthedocs.io/en/latest/Project_03/Project_03.html
 - https://pubchem.ncbi.nlm.nih.gov/compound/962
+- https://psicode.org/psi4manual/4.0b3/psithoninput.html
+- https://vergil.chemistry.gatech.edu/static/content/DFT-intro.pdf
