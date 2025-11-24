@@ -21,3 +21,4 @@
 - https://psicode.org/psi4manual/4.0b3/psithoninput.html
 - https://vergil.chemistry.gatech.edu/static/content/DFT-intro.pdf
 - https://github.com/pwborthwick/kspy-gga
+- https://people.sc.fsu.edu/~jburkardt/datasets/sphere_lebedev_rule/sphere_lebedev_rule.html
