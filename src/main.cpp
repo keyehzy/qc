@@ -10,6 +10,7 @@
 #include "basis_set.h"
 #include "basis_set/sto-3g.h"
 #include "lda.h"
+#include "hartree_fock.h"
 
 #include <fstream>
 #include <eigen3/Eigen/Dense>
@@ -46,8 +47,9 @@ int main() {
 
   int n_electrons = 10;
   auto integrals = InputIntegrals(molecule, orbitals);
-  auto xc_grid = SCF_LDA::atom_centered_grid::build_xc_grid(molecule, orbitals);
-  auto result = SCF_LDA::run_scf(integrals, xc_grid, n_electrons);
+  // auto xc_grid = SCF_LDA::atom_centered_grid::build_xc_grid(molecule, orbitals);
+  // auto result = SCF_LDA::run_scf(integrals, xc_grid, n_electrons);
+  auto result = HartreeFock::run_scf(integrals, n_electrons);
   return 0;
 }
 

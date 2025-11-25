@@ -4,7 +4,6 @@
 #include <deque>
 #include <eigen3/Eigen/Dense>
 
-namespace SCF_LDA {
 class DIIS {
 private:
     std::deque<Eigen::MatrixXd> f_store; // Store previous Fock matrices
@@ -71,4 +70,3 @@ public:
         e_store.clear();
     }
 };
-} // namespace SCF_LDA
