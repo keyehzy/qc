@@ -11,6 +11,17 @@ Eigen::MatrixXd build_density(const Eigen::MatrixXd& C, int n_occ) {
     return C.leftCols(n_occ) * C.leftCols(n_occ).transpose();
 }
 
+Eigen::MatrixXd compute_coulomb(const Eigen::Tensor<double, 4>& ERI, const Eigen::MatrixXd& P) {
+  Eigen::TensorMap<Eigen::Tensor<double, 2>> P_map(const_cast<double*>(P.data()), P.rows(), P.cols());
+  Eigen::array<Eigen::IndexPair<int>, 2> j_contr = {
+      Eigen::IndexPair<int>(2, 0),
+      Eigen::IndexPair<int>(3, 1)
+  };
+  Eigen::Tensor<double, 2> J_tensor = ERI.contract(P_map, j_contr);
+  Eigen::MatrixXd J = Eigen::Map<Eigen::MatrixXd>(J_tensor.data(), P.rows(), P.cols());
+  return J;
+}
+
 Eigen::MatrixXd compute_exchange(const Eigen::Tensor<double, 4>& ERI, const Eigen::MatrixXd& P) {
     Eigen::TensorMap<Eigen::Tensor<double, 2>> P_map(const_cast<double*>(P.data()), P.rows(), P.cols());
     Eigen::array<Eigen::IndexPair<int>, 2> contr = {
@@ -18,10 +29,11 @@ Eigen::MatrixXd compute_exchange(const Eigen::Tensor<double, 4>& ERI, const Eige
         Eigen::IndexPair<int>(3, 1)   // l index
     };
     Eigen::Tensor<double, 2> K_tensor = ERI.contract(P_map, contr);
-    return Eigen::Map<Eigen::MatrixXd>(K_tensor.data(), P.rows(), P.cols());
+    Eigen::MatrixXd K = Eigen::Map<Eigen::MatrixXd>(K_tensor.data(), P.rows(), P.cols());
+    return K;
 }
 
-void diagonalize_fock(const Eigen::MatrixXd& F, const Eigen::MatrixXd& X, int n_occ, Eigen::MatrixXd& C, Eigen::VectorXd& eps, Eigen::MatrixXd& P) {
+void diagonalize_fock_and_reconstruct_answer(const Eigen::MatrixXd& F, const Eigen::MatrixXd& X, int n_occ, Eigen::MatrixXd& C, Eigen::VectorXd& eps, Eigen::MatrixXd& P) {
     const Eigen::MatrixXd F_ortho = X.transpose() * F * X;
     Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> eig(F_ortho);
     C = X * eig.eigenvectors();
@@ -84,13 +96,7 @@ Result run_scf(const InputIntegrals& input, int n_electrons, int multiplicity) {
         const Eigen::MatrixXd P_total = P[0] + P[1];
 
         // Compute Coulomb J (common to both spins)
-        Eigen::TensorMap<Eigen::Tensor<double, 2>> P_tot_map(const_cast<double*>(P_total.data()), norb, norb);
-        Eigen::array<Eigen::IndexPair<int>, 2> j_contr = {
-            Eigen::IndexPair<int>(2, 0),
-            Eigen::IndexPair<int>(3, 1)
-        };
-        Eigen::Tensor<double, 2> J_tensor = input.ERI.contract(P_tot_map, j_contr);
-        Eigen::MatrixXd J = Eigen::Map<Eigen::MatrixXd>(J_tensor.data(), norb, norb);
+        Eigen::MatrixXd J = compute_coulomb(input.ERI, P_total);
 
         // Process spin channels
         std::array<Eigen::MatrixXd, 2> F;
@@ -112,7 +118,7 @@ Result run_scf(const InputIntegrals& input, int n_electrons, int multiplicity) {
 
         // Diagonalize and form new densities
         for (int s = 0; s < 2; ++s) {
-            diagonalize_fock(F[s], X, n_occ[s], C[s], epsilon[s], P[s]);
+            diagonalize_fock_and_reconstruct_answer(F[s], X, n_occ[s], C[s], epsilon[s], P[s]);
         }
 
         // Convergence check
