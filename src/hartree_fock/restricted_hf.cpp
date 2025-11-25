@@ -93,7 +93,7 @@ Result run_scf(const InputIntegrals& input, int n_electrons) {
       Eigen::MatrixXd F = H_core + J - 0.5 * K;
 
       // DIIS Extrapolation
-      Eigen::MatrixXd F_diis = diis.compute(F, P, input.S);
+      F = diis.compute(F, P, input.S);
 
       // Energy
       const double E_elec = compute_elec_energy(P, H_core, F);

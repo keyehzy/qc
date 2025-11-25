@@ -6,6 +6,7 @@
 #include <iomanip>
 
 namespace SCF_LDA {
+namespace {
 Eigen::VectorXd compute_density_on_grid(const Eigen::MatrixXd& P, const XC_Grid& xc) {
     // 1. Temp = Phi * P (N_grid x N_orb)
     Eigen::MatrixXd Temp = xc.phi * P;
@@ -79,12 +80,60 @@ Eigen::MatrixXd build_V_xc(const XC_Grid& xc, const Eigen::VectorXd& v_xc_grid, 
     return V_xc;
 }
 
+Eigen::MatrixXd build_density(const Eigen::MatrixXd& C, int n_occ) {
+    return 2.0 * C.leftCols(n_occ) * C.leftCols(n_occ).transpose();
+}
+
+Eigen::MatrixXd compute_coulomb(const Eigen::Tensor<double, 4>& ERI, const Eigen::MatrixXd& P) {
+  Eigen::TensorMap<Eigen::Tensor<double, 2>> P_map(const_cast<double*>(P.data()), P.rows(), P.cols());
+  Eigen::array<Eigen::IndexPair<int>, 2> j_contr = {
+      Eigen::IndexPair<int>(2, 0),
+      Eigen::IndexPair<int>(3, 1)
+  };
+  Eigen::Tensor<double, 2> J_tensor = ERI.contract(P_map, j_contr);
+  Eigen::MatrixXd J = Eigen::Map<Eigen::MatrixXd>(J_tensor.data(), P.rows(), P.cols());
+  return J;
+}
+
+std::pair<double, Eigen::MatrixXd> compute_exchange_correlation(const Eigen::MatrixXd& P, const XC_Grid& xc, CorrelationFunctional corr_type = XC_VWN) {
+    Eigen::VectorXd rho_grid = compute_density_on_grid(P, xc);
+    Eigen::VectorXd eps_xc_grid;
+    Eigen::VectorXd v_xc_grid;
+    double E_xc = eval_xc(rho_grid, xc, eps_xc_grid, v_xc_grid, corr_type);
+    Eigen::MatrixXd V_xc = build_V_xc(xc, v_xc_grid, P.cols());
+    return {E_xc, V_xc};
+}
+
+void diagonalize_fock_and_reconstruct_answer(const Eigen::MatrixXd& F, const Eigen::MatrixXd& X, int n_occ, Eigen::MatrixXd& C, Eigen::VectorXd& eps, Eigen::MatrixXd& P) {
+    const Eigen::MatrixXd F_ortho = X.transpose() * F * X;
+    Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> eig(F_ortho);
+    C = X * eig.eigenvectors();
+    eps = eig.eigenvalues();
+    P = build_density(C, n_occ);
+}
+
+double compute_one_e_energy(const Eigen::MatrixXd& P, const Eigen::MatrixXd& H_core) {
+    return (P.cwiseProduct(H_core)).sum();
+}
+
+double compute_coul_energy(const Eigen::MatrixXd& P, const Eigen::MatrixXd& J) {
+    return 0.5 * (P.cwiseProduct(J)).sum();
+}
+} // anonymous namespace
+
+
 Result run_scf(const InputIntegrals& input, const XC_Grid& xc, int n_electrons) {
+    if (n_electrons % 2 != 0) {
+      throw std::runtime_error("Invalid electron count for closed shell");
+    }
     const int norb = input.S.rows();
+    
     const int n_occ = n_electrons / 2;
     const double convergence = 1e-8;
     const int max_iter = 100;
     DIIS diis;
+    Eigen::MatrixXd P, C;
+    Eigen::VectorXd epsilon;
 
     // Step 1: Core Hamiltonian & Orthogonalizer
     const Eigen::MatrixXd H_core = input.T + input.V;
@@ -100,10 +149,8 @@ Result run_scf(const InputIntegrals& input, const XC_Grid& xc, int n_electrons) 
     // Step 2: Initial guess from H_core
     Eigen::MatrixXd H_ortho = X.transpose() * H_core * X;
     Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> eig_H(H_ortho);
-    Eigen::MatrixXd C = X * eig_H.eigenvectors();
-
-    Eigen::MatrixXd C_occ = C.leftCols(n_occ);
-    Eigen::MatrixXd P = 2.0 * C_occ * C_occ.transpose();
+    C = X * eig_H.eigenvectors();
+    P = build_density(C, n_occ);
 
     // Step 3: SCF iterations
     double E_total_prev = 0.0;
@@ -111,50 +158,30 @@ Result run_scf(const InputIntegrals& input, const XC_Grid& xc, int n_electrons) 
     std::cout << "\nStarting SCF iterations...\n" << std::endl;
 
     for (int iter = 0; iter < max_iter; ++iter) {
-      // Map to Tensor
-      Eigen::TensorMap<Eigen::Tensor<double, 2>> P_tensor(P.data(), norb, norb);
+      const Eigen::MatrixXd P_old = P; // Save for convergence check
 
       // Coulomb J
-      // J_ij = Sum_kl (ij|kl) * P_kl
-      // Contract ERI dims 2,3 with P dims 0,1
-      Eigen::array<Eigen::IndexPair<int>, 2> j_contract = {
-        Eigen::IndexPair<int>(2, 0),  // k
-        Eigen::IndexPair<int>(3, 1)   // l
-      };
-      Eigen::Tensor<double, 2> J_tensor = input.ERI.contract(P_tensor, j_contract);
-      Eigen::MatrixXd J = Eigen::Map<Eigen::MatrixXd>(J_tensor.data(), norb, norb);
+      Eigen::MatrixXd J = compute_coulomb(input.ERI, P);
 
       // XC Calculations
-      Eigen::VectorXd rho_grid = compute_density_on_grid(P, xc);
-      Eigen::VectorXd eps_xc_grid;
-      Eigen::VectorXd v_xc_grid;
-      double E_xc = eval_xc(rho_grid, xc, eps_xc_grid, v_xc_grid, XC_VWN);
-      Eigen::MatrixXd V_xc = build_V_xc(xc, v_xc_grid, norb);
+      auto [E_xc, V_xc] = compute_exchange_correlation(P, xc, XC_VWN);
 
       // Build Fock matrix
       Eigen::MatrixXd F = H_core + J + V_xc;
 
       // DIIS Extrapolation
-      Eigen::MatrixXd F_diis = diis.compute(F, P, input.S);
+      F = diis.compute(F, P, input.S);
 
       // Energy
-      double E_one_e = (P.cwiseProduct(H_core)).sum();
-      double E_coul  = 0.5 * (P.cwiseProduct(J)).sum();
+      double E_one_e = compute_one_e_energy(P, H_core);
+      double E_coul  = compute_coul_energy(P, J);
       double E_total = E_one_e + E_coul + E_xc + input.nuc_repulsion;
 
       // Diagonalize Fock
-      const Eigen::MatrixXd F_ortho = X.transpose() * F_diis * X;
-      Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> eig_F(F_ortho);
-      const Eigen::MatrixXd C_ortho = eig_F.eigenvectors();
-      const Eigen::VectorXd epsilon = eig_F.eigenvalues();
-
-      // New density
-      Eigen::MatrixXd C_new = X * C_ortho;
-      Eigen::MatrixXd C_occ_new = C_new.leftCols(n_occ);
-      Eigen::MatrixXd P_new = 2.0 * C_occ_new * C_occ_new.transpose();
+      diagonalize_fock_and_reconstruct_answer(F, X, n_occ, C, epsilon, P);
 
       // Convergence Check
-      const double rmsd = (P_new - P).norm();
+      const double rmsd = (P - P_old).norm();
       const double deltaE = std::abs(E_total - E_total_prev);
 
       std::cout << "Iter " << std::setw(3) << iter + 1
@@ -166,11 +193,10 @@ Result run_scf(const InputIntegrals& input, const XC_Grid& xc, int n_electrons) 
 
       if (rmsd < convergence && deltaE < convergence) {
           std::cout << "\nSCF converged in " << iter + 1 << " iterations!" << std::endl;
-          return {E_total, E_xc, C_new, epsilon, P};
+          return {E_total, E_xc, C, epsilon, P};
       }
 
       E_total_prev = E_total;
-      P = P_new;
   }
 
   throw std::runtime_error("SCF failed to converge!");
