@@ -100,8 +100,8 @@ Result run_scf(const InputIntegrals& input, const XC_Grid& xc, int n_electrons) 
     // Step 2: Initial guess from H_core
     Eigen::MatrixXd H_ortho = X.transpose() * H_core * X;
     Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> eig_H(H_ortho);
-
     Eigen::MatrixXd C = X * eig_H.eigenvectors();
+
     Eigen::MatrixXd C_occ = C.leftCols(n_occ);
     Eigen::MatrixXd P = 2.0 * C_occ * C_occ.transpose();
 
@@ -150,7 +150,7 @@ Result run_scf(const InputIntegrals& input, const XC_Grid& xc, int n_electrons) 
 
       // New density
       Eigen::MatrixXd C_new = X * C_ortho;
-      const auto C_occ_new = C_new.leftCols(n_occ);
+      Eigen::MatrixXd C_occ_new = C_new.leftCols(n_occ);
       Eigen::MatrixXd P_new = 2.0 * C_occ_new * C_occ_new.transpose();
 
       // Convergence Check

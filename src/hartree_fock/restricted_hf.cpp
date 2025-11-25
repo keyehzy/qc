@@ -7,6 +7,10 @@
 namespace SCF_HF {
 namespace restricted {
 Result run_scf(const InputIntegrals& input, int n_electrons) {
+    if (n_electrons % 2 != 0) {
+      throw std::runtime_error("Invalid electron count for closed shell");
+    }
+
     const int norb = input.S.rows();
     const int n_occ = n_electrons / 2;
     const double convergence = 1e-8;
@@ -27,8 +31,8 @@ Result run_scf(const InputIntegrals& input, int n_electrons) {
     // Step 2: Initial guess from H_core
     Eigen::MatrixXd H_ortho = X.transpose() * H_core * X;
     Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> eig_H(H_ortho);
-
     Eigen::MatrixXd C = X * eig_H.eigenvectors();
+
     Eigen::MatrixXd C_occ = C.leftCols(n_occ);
     Eigen::MatrixXd P = 2.0 * C_occ * C_occ.transpose();
 
@@ -79,7 +83,7 @@ Result run_scf(const InputIntegrals& input, int n_electrons) {
 
       // New density
       Eigen::MatrixXd C_new = X * C_ortho;
-      const auto C_occ_new = C_new.leftCols(n_occ);
+      Eigen::MatrixXd C_occ_new = C_new.leftCols(n_occ);
       Eigen::MatrixXd P_new = 2.0 * C_occ_new * C_occ_new.transpose();
 
       // Convergence Check
@@ -94,7 +98,7 @@ Result run_scf(const InputIntegrals& input, int n_electrons) {
 
       if (rmsd < convergence && deltaE < convergence) {
           std::cout << "\nSCF converged in " << iter + 1 << " iterations!" << std::endl;
-          return {E_total, C, epsilon, P};
+          return {E_total, C_new, epsilon, P_new};
       }
 
       E_total_prev = E_total;
@@ -104,4 +108,4 @@ Result run_scf(const InputIntegrals& input, int n_electrons) {
   throw std::runtime_error("SCF failed to converge!");
 }
 } // namespace restricted
-} // namespace HartreeFock
+} // namespace SCF_HF
