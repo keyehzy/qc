@@ -46,7 +46,7 @@ int main() {
   auto orbitals = convert(molecule, BS_STO_3G);
 
   int n_electrons = 10;
-  int multiplicity = 3;
+  int multiplicity = 1;
   auto integrals = InputIntegrals(molecule, orbitals);
   // auto xc_grid = SCF_LDA::atom_centered_grid::build_xc_grid(molecule, orbitals);
   // auto result = SCF_LDA::run_scf(integrals, xc_grid, n_electrons);
