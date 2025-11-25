@@ -43,15 +43,15 @@ std::vector<Atom> parse_molecule(const std::string& filename) {
 
 
 int main() {
-  auto molecule = parse_molecule("./assets/h2o/STO-3G/geom.dat");
+  auto molecule = parse_molecule("./assets/benzene_geom.txt");
   auto orbitals = convert(molecule, BS_STO_3G);
 
-  int n_electrons = 10;
-  int multiplicity = 1;
+  int n_electrons = 6 * 6 + 6;
+  // int multiplicity = 1;
   auto integrals = InputIntegrals(molecule, orbitals);
-  auto xc_grid = SCF_LDA::atom_centered_grid::build_xc_grid(molecule, orbitals);
-  auto result = SCF_LDA::run_scf(integrals, xc_grid, n_electrons);
-  // auto result = SCF_HF::restricted::run_scf(integrals, n_electrons);
+  // auto xc_grid = SCF_LDA::atom_centered_grid::build_xc_grid(molecule, orbitals);
+  // auto result = SCF_LDA::run_scf(integrals, xc_grid, n_electrons);
+  auto result = SCF_HF::restricted::run_scf(integrals, n_electrons);
   return 0;
 }
 

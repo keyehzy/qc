@@ -126,7 +126,6 @@ Result run_scf(const InputIntegrals& input, const XC_Grid& xc, int n_electrons) 
     if (n_electrons % 2 != 0) {
       throw std::runtime_error("Invalid electron count for closed shell");
     }
-    const int norb = input.S.rows();
     
     const int n_occ = n_electrons / 2;
     const double convergence = 1e-8;
