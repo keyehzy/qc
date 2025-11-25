@@ -1,10 +1,11 @@
 #pragma once
 
-#include "input_integrals.h"
+#include "../input_integrals.h"
 
 #include <eigen3/Eigen/Dense>
 
-namespace HartreeFock {
+namespace SCF_HF {
+namespace restricted {
 struct Result {
   double energy;
   Eigen::MatrixXd C;
@@ -13,4 +14,5 @@ struct Result {
 };
 
 Result run_scf(const InputIntegrals& input, int n_electrons);
-} // namespace HartreeFock
+} // namespace restricted
+} // namespace SCF_HF

@@ -1,10 +1,11 @@
-#include "hartree_fock.h"
-#include "diis.h"
+#include "restricted_hf.h"
+#include "../diis.h"
 
 #include <iostream>
 #include <iomanip>
 
-namespace HartreeFock {
+namespace SCF_HF {
+namespace restricted {
 Result run_scf(const InputIntegrals& input, int n_electrons) {
     const int norb = input.S.rows();
     const int n_occ = n_electrons / 2;
@@ -102,4 +103,5 @@ Result run_scf(const InputIntegrals& input, int n_electrons) {
 
   throw std::runtime_error("SCF failed to converge!");
 }
+} // namespace restricted
 } // namespace HartreeFock
