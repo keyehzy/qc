@@ -47,7 +47,6 @@ double compute_elec_energy(const Eigen::MatrixXd& P, const Eigen::MatrixXd& H_co
 } // anonymous namespace
 
 Result run_scf(const InputIntegrals& input, int n_electrons, int multiplicity) {
-    const int norb = input.S.rows();
     const int n_alpha = (n_electrons + multiplicity - 1) / 2;
     const int n_beta  = n_electrons - n_alpha;
 

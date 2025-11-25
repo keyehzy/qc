@@ -29,7 +29,8 @@ Eigen::MatrixXd compute_exchange(const Eigen::Tensor<double, 4>& ERI, const Eige
         Eigen::IndexPair<int>(3, 1)   // l index
     };
     Eigen::Tensor<double, 2> K_tensor = ERI.contract(P_map, contr);
-    return Eigen::Map<Eigen::MatrixXd>(K_tensor.data(), P.rows(), P.cols());
+    Eigen::MatrixXd K = Eigen::Map<Eigen::MatrixXd>(K_tensor.data(), P.rows(), P.cols());
+    return K;
 }
 
 void diagonalize_fock_and_reconstruct_answer(const Eigen::MatrixXd& F, const Eigen::MatrixXd& X, int n_occ, Eigen::MatrixXd& C, Eigen::VectorXd& eps, Eigen::MatrixXd& P) {
@@ -50,7 +51,6 @@ Result run_scf(const InputIntegrals& input, int n_electrons) {
       throw std::runtime_error("Invalid electron count for closed shell");
     }
 
-    const int norb = input.S.rows();
     const int n_occ = n_electrons / 2;
     const double convergence = 1e-8;
     const int max_iter = 100;
@@ -73,7 +73,7 @@ Result run_scf(const InputIntegrals& input, int n_electrons) {
     Eigen::MatrixXd H_ortho = X.transpose() * H_core * X;
     Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> eig_H(H_ortho);
     C = X * eig_H.eigenvectors();
-    P = build_density(C, norb);
+    P = build_density(C, n_occ);
 
     // Step 3: SCF iterations
     double E_total_prev = 0.0;
