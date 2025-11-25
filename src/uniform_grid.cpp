@@ -1,5 +1,4 @@
 #include "uniform_grid.h"
-#include "lebedev_15.h"
 
 namespace SCF_LDA {
 namespace uniform_grid {
