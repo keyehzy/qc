@@ -1,6 +1,7 @@
 #include "lda.h"
 #include "functionals.h"
 #include "diis.h"
+#include <xc.h>
 
 #include <iostream>
 #include <iomanip>

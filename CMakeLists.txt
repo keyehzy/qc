@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.15)
 set(CMAKE_C_COMPILER "/opt/homebrew/opt/llvm/bin/clang")
 set(CMAKE_CXX_COMPILER "/opt/homebrew/opt/llvm/bin/clang++")
 
-project(QC CXX)
+project(QC C CXX)
 
 # Set C++20 standard
 set(CMAKE_CXX_STANDARD 20)
@@ -67,6 +67,8 @@ link_directories(
     ${LIBOMP_LIBRARY_DIR}
 )
 
+add_subdirectory(vendor)
+
 # Source files
 set(SOURCES
     src/main.cpp
@@ -82,6 +84,12 @@ set(SOURCES
 # Executable
 add_executable(main ${SOURCES})
 
+target_include_directories(main PRIVATE
+    ${CMAKE_SOURCE_DIR}/vendor/libxc/src
+    ${CMAKE_BINARY_DIR}/vendor/libxc/src
+    ${CMAKE_BINARY_DIR}/vendor/libxc
+)
+
 # Link libraries
 target_link_libraries(main
     gsl
@@ -89,4 +97,5 @@ target_link_libraries(main
     m
     openblas
     OpenMP::OpenMP_CXX
+    xc
 )
