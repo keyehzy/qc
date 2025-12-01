@@ -84,12 +84,6 @@ set(SOURCES
 # Executable
 add_executable(main ${SOURCES})
 
-target_include_directories(main PRIVATE
-    ${CMAKE_SOURCE_DIR}/vendor/libxc/src
-    ${CMAKE_BINARY_DIR}/vendor/libxc/src
-    ${CMAKE_BINARY_DIR}/vendor/libxc
-)
-
 # Link libraries
 target_link_libraries(main
     gsl
